@@ -1,0 +1,2 @@
+REVOKE EXECUTE ON FUNCTION public.machine_belongs_to_user(uuid, uuid) FROM PUBLIC, anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.lead_belongs_to_user(uuid, uuid) FROM PUBLIC, anon, authenticated;

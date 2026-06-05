@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VendAI · Manual de Marca</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=Martian+Mono:wght@400;500;600&family=Hanken+Grotesk:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500;600&family=Spline+Sans:wght@400;500;600&family=Unbounded:wght@500;600;700&family=Familjen+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="manual.css" />
+<link rel="icon" href="../recursos/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../recursos/favicon-32.png" sizes="32x32" />
+<link rel="apple-touch-icon" href="../recursos/apple-touch-icon.png" />
+<meta name="theme-color" content="#0E1116" />
+</head>
+<body>
+
+<!-- ============ SPRITE: isotipo Núcleo ============ -->
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <defs>
+    <linearGradient id="g-signal" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#2B7FF5"/><stop offset=".52" stop-color="#1FB6E8"/><stop offset="1" stop-color="#46E4CF"/>
+    </linearGradient>
+    <linearGradient id="g-green" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#1FB6E8"/><stop offset=".5" stop-color="#19D2BC"/><stop offset="1" stop-color="#16D399"/>
+    </linearGradient>
+  </defs>
+  <symbol id="chip-grad" viewBox="0 0 110 110">
+    <g stroke="url(#g-signal)" stroke-width="7" stroke-linecap="round" fill="none">
+      <line x1="30" y1="6" x2="30" y2="20"/><line x1="55" y1="6" x2="55" y2="20"/><line x1="80" y1="6" x2="80" y2="20"/>
+      <line x1="30" y1="90" x2="30" y2="104"/><line x1="55" y1="90" x2="55" y2="104"/><line x1="80" y1="90" x2="80" y2="104"/>
+      <line x1="6" y1="30" x2="20" y2="30"/><line x1="6" y1="55" x2="20" y2="55"/><line x1="6" y1="80" x2="20" y2="80"/>
+      <line x1="90" y1="30" x2="104" y2="30"/><line x1="90" y1="55" x2="104" y2="55"/><line x1="90" y1="80" x2="104" y2="80"/>
+      <rect x="20" y="20" width="70" height="70" rx="16"/>
+    </g>
+    <rect x="40" y="40" width="30" height="30" rx="8" fill="url(#g-signal)"/>
+  </symbol>
+  <symbol id="chip-green" viewBox="0 0 110 110">
+    <g stroke="url(#g-green)" stroke-width="7" stroke-linecap="round" fill="none">
+      <line x1="30" y1="6" x2="30" y2="20"/><line x1="55" y1="6" x2="55" y2="20"/><line x1="80" y1="6" x2="80" y2="20"/>
+      <line x1="30" y1="90" x2="30" y2="104"/><line x1="55" y1="90" x2="55" y2="104"/><line x1="80" y1="90" x2="80" y2="104"/>
+      <line x1="6" y1="30" x2="20" y2="30"/><line x1="6" y1="55" x2="20" y2="55"/><line x1="6" y1="80" x2="20" y2="80"/>
+      <line x1="90" y1="30" x2="104" y2="30"/><line x1="90" y1="55" x2="104" y2="55"/><line x1="90" y1="80" x2="104" y2="80"/>
+      <rect x="20" y="20" width="70" height="70" rx="16"/>
+    </g>
+    <rect x="40" y="40" width="30" height="30" rx="8" fill="url(#g-green)"/>
+  </symbol>
+  <symbol id="chip-mono" viewBox="0 0 110 110">
+    <g stroke="currentColor" stroke-width="7" stroke-linecap="round" fill="none">
+      <line x1="30" y1="6" x2="30" y2="20"/><line x1="55" y1="6" x2="55" y2="20"/><line x1="80" y1="6" x2="80" y2="20"/>
+      <line x1="30" y1="90" x2="30" y2="104"/><line x1="55" y1="90" x2="55" y2="104"/><line x1="80" y1="90" x2="80" y2="104"/>
+      <line x1="6" y1="30" x2="20" y2="30"/><line x1="6" y1="55" x2="20" y2="55"/><line x1="6" y1="80" x2="20" y2="80"/>
+      <line x1="90" y1="30" x2="104" y2="30"/><line x1="90" y1="55" x2="104" y2="55"/><line x1="90" y1="80" x2="104" y2="80"/>
+      <rect x="20" y="20" width="70" height="70" rx="16"/>
+    </g>
+    <rect x="40" y="40" width="30" height="30" rx="8" fill="currentColor"/>
+  </symbol>
+
+  <!-- Iconografía · grid 24 · trazo 1.8 · remates redondos · currentColor -->
+  <symbol id="ic-chip" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="2.5"/><path d="M9 4v3M12 4v3M15 4v3M9 17v3M12 17v3M15 17v3M4 9h3M4 12h3M4 15h3M17 9h3M17 12h3M17 15h3"/></g></symbol>
+  <symbol id="ic-arrow" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h8M3 12h11M3 16h6"/><polyline points="13,7 19,12 13,17"/></g></symbol>
+  <symbol id="ic-vending" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><line x1="13.5" y1="3" x2="13.5" y2="21"/><path d="M8.5 7h3M8.5 10.5h3M8.5 14h3"/><circle cx="15.8" cy="7" r=".9"/><rect x="14.8" y="15" width="2" height="3" rx=".6"/></g></symbol>
+  <symbol id="ic-package" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 20 7 20 17 12 21 4 17 4 7Z"/><path d="M4 7 12 11 20 7"/><line x1="12" y1="11" x2="12" y2="21"/></g></symbol>
+  <symbol id="ic-bolt" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 6 13h5l-1 9 8-11h-5z"/></g></symbol>
+  <symbol id="ic-spark" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 13.2 10.8 20 12 13.2 13.2 12 20 10.8 13.2 4 12 10.8 10.8Z"/></g></symbol>
+  <symbol id="ic-dashboard" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></g></symbol>
+  <symbol id="ic-analytics" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,4 4,20 20,20"/><path d="M8 20v-5M12.5 20v-8M17 20v-11"/></g></symbol>
+  <symbol id="ic-layers" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 21 8 12 13 3 8Z"/><path d="M3 12 12 17 21 12"/><path d="M3 16 12 21 21 16"/></g></symbol>
+  <symbol id="ic-users" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.5" r="3"/><path d="M3.5 19c0-3.5 2.5-5 5.5-5s5.5 1.5 5.5 5"/><circle cx="17" cy="9" r="2.3"/><path d="M16 14.2c2.6.1 4.5 1.6 4.5 4.8"/></g></symbol>
+  <symbol id="ic-sliders" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="8" x2="20" y2="8"/><line x1="4" y1="16" x2="20" y2="16"/><circle cx="9" cy="8" r="2.4"/><circle cx="15" cy="16" r="2.4"/></g></symbol>
+  <symbol id="ic-wallet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="6" width="17" height="13" rx="2.5"/><path d="M16 11h5v4h-5a2 2 0 0 1 0-4Z"/></g></symbol>
+  <symbol id="ic-token" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 6.5 16 12 12 17.5 8 12Z"/></g></symbol>
+  <symbol id="ic-swap" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="7,5 4,8 7,11"/><line x1="4" y1="8" x2="20" y2="8"/><polyline points="17,13 20,16 17,19"/><line x1="20" y1="16" x2="4" y2="16"/></g></symbol>
+  <symbol id="ic-refresh" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12a7 7 0 0 1 11.5-5.2"/><polyline points="16.5,3 16.5,7 12.5,7"/><path d="M19 12a7 7 0 0 1-11.5 5.2"/><polyline points="7.5,21 7.5,17 11.5,17"/></g></symbol>
+  <symbol id="ic-bell" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 5 1.5 7 1.5 7H4.5S6 14 6 9Z"/><path d="M10 19a2 2 0 0 0 4 0"/></g></symbol>
+  <symbol id="ic-shield" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 19 6v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6Z"/><polyline points="9,12 11,14 15,9.5"/></g></symbol>
+  <symbol id="ic-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6"/><line x1="15.5" y1="15.5" x2="20" y2="20"/></g></symbol>
+  <symbol id="ic-location" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.5-7-11.5a7 7 0 0 1 14 0C19 14.5 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.4"/></g></symbol>
+  <symbol id="ic-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><polyline points="12,7 12,12 16,14"/></g></symbol>
+  <symbol id="ic-check" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><polyline points="8.5,12.2 11,14.7 15.5,9.5"/></g></symbol>
+  <symbol id="ic-plus" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></g></symbol>
+</svg>
+
+<!-- ============ NAV ============ -->
+<nav class="nav" aria-label="Índice">
+  <a href="#esencia"><span class="bar"></span>01 Esencia</a>
+  <a href="#logo"><span class="bar"></span>02 Logotipo</a>
+  <a href="#isotipo"><span class="bar"></span>03 Isotipo</a>
+  <a href="#construccion"><span class="bar"></span>04 Construcción</a>
+  <a href="#versiones"><span class="bar"></span>05 Versiones</a>
+  <a href="#usos"><span class="bar"></span>06 Usos</a>
+  <a href="#color"><span class="bar"></span>07 Color</a>
+  <a href="#tipografia"><span class="bar"></span>08 Tipografía</a>
+  <a href="#sistema"><span class="bar"></span>09 Sistema</a>
+  <a href="#iconografia"><span class="bar"></span>10 Iconografía</a>
+  <a href="#aplicaciones"><span class="bar"></span>11 Aplicaciones</a>
+  <a href="#recursos"><span class="bar"></span>12 Recursos</a>
+</nav>
+
+<!-- ============ COVER ============ -->
+<header class="cover" id="top">
+  <div class="cover-top">
+    <span class="eyebrow">Manual de Marca</span>
+    <span class="eyebrow">V1.0 — Mayo 2026</span>
+  </div>
+
+  <div class="cover-mid">
+    <div class="lockup" style="align-items:center">
+      <span class="ico" style="width:clamp(58px,9vw,104px);height:clamp(58px,9vw,104px)"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span>
+      <span class="wm" style="font-size:clamp(52px,9vw,116px)"><span class="vend">Vend</span><span class="ai">AI</span></span>
+    </div>
+    <p class="lead" style="max-width:720px">Laboratorio de proyectos <strong>AI-Native</strong>, <strong>Crypto</strong> y negocios tradicionales. Construye, prueba y despliega máquinas autónomas — empezando por <em>vending</em>.</p>
+  </div>
+
+  <div>
+    <div class="cover-rule"></div>
+    <div class="cover-bot" style="padding-top:22px">
+      <span class="eyebrow">Identidad &middot; Color &middot; Tipografía &middot; Aplicaciones</span>
+      <span class="eyebrow">VendAI Labs &copy; 2026</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============ 01 ESENCIA ============ -->
+<section class="section" id="esencia">
+  <div class="shead">
+    <span class="snum">01</span>
+    <div>
+      <span class="eyebrow">La marca</span>
+      <h2 style="margin-top:12px">Un laboratorio que<br/>construye y despliega.</h2>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div>
+      <p class="lead">VendAI es un <strong>venture lab</strong>: incuba ideas en la frontera de la inteligencia artificial, la economía cripto y los negocios físicos de toda la vida.</p>
+      <p>Su primera apuesta son las <strong>máquinas de vending autónomas</strong> — retail operado por software, sin fricción, siempre encendido. Cada proyecto que nace del lab comparte una misma genética: cómputo en el núcleo, ejecución por encima de la teoría.</p>
+      <p class="small">La marca tiene que estirarse sin romperse: hoy firma una máquina de vending, mañana un protocolo on-chain o un producto de software. El sistema visual está diseñado para ese rango.</p>
+    </div>
+    <div class="panel center" style="min-height:300px;background:var(--ink)">
+      <span class="ico" style="width:130px;height:130px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span>
+    </div>
+  </div>
+
+  <div class="pillars" style="margin-top:40px">
+    <div>
+      <div class="kicker"><span class="dot" style="background:var(--blue)"></span><span class="eyebrow">Vertical 01</span></div>
+      <h3>AI-Native</h3>
+      <p class="small" style="margin:8px 0 0">Productos donde el modelo no es una función — es el producto. Agentes, automatización, software que opera solo.</p>
+    </div>
+    <div>
+      <div class="kicker"><span class="dot" style="background:var(--green)"></span><span class="eyebrow">Vertical 02</span></div>
+      <h3>Crypto</h3>
+      <p class="small" style="margin:8px 0 0">Liquidez, pagos y propiedad on-chain. Infraestructura para que las máquinas transaccionen entre sí.</p>
+    </div>
+    <div>
+      <div class="kicker"><span class="dot" style="background:var(--violet)"></span><span class="eyebrow">Vertical 03</span></div>
+      <h3>Tradicional</h3>
+      <p class="small" style="margin:8px 0 0">Negocios físicos con márgenes reales — vending el primero — reinventados con la pila tecnológica del lab.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 LOGOTIPO ============ -->
+<section class="section" id="logo">
+  <div class="shead">
+    <span class="snum">02</span>
+    <div>
+      <span class="eyebrow">El logotipo</span>
+      <h2 style="margin-top:12px">Anatomía del logotipo.</h2>
+    </div>
+  </div>
+
+  <p class="lead" style="max-width:760px;margin-bottom:48px">El logotipo principal combina el <strong>isotipo Núcleo</strong> con el <strong>wordmark</strong>. Es la firma por defecto: úsalo siempre que el espacio lo permita.</p>
+
+  <div class="panel center" style="min-height:340px;padding:48px">
+    <div class="lockup" style="align-items:center">
+      <span class="ico" style="width:96px;height:96px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span>
+      <span class="wm" style="font-size:clamp(40px,6vw,76px)"><span class="vend">Vend</span><span class="ai">AI</span></span>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:32px">
+    <div>
+      <div class="kicker"><span class="idx">A</span><span class="eyebrow">Isotipo · Núcleo</span></div>
+      <p class="small" style="margin:0">El chip: el núcleo de cómputo. Sus pines representan las entradas y salidas del laboratorio — datos, capital y producto fluyendo hacia las verticales.</p>
+    </div>
+    <div>
+      <div class="kicker"><span class="idx">B</span><span class="eyebrow">Wordmark</span></div>
+      <p class="small" style="margin:0"><strong>“Vend”</strong> en contorno (la base, el negocio) y <strong>“AI”</strong> en sólido con degradado (la energía, el motor). El contraste de pesos es intencional y no debe alterarse.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 ISOTIPO ============ -->
+<section class="section" id="isotipo">
+  <div class="shead">
+    <span class="snum">03</span>
+    <div>
+      <span class="eyebrow">El isotipo</span>
+      <h2 style="margin-top:12px">Núcleo.</h2>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel center" style="min-height:320px">
+      <span class="ico" style="width:160px;height:160px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:center">
+      <p class="lead">El isotipo funciona solo cuando la marca ya es conocida: avatares, app icons, favicons, sellos sobre producto.</p>
+      <p>Es un <strong>chip</strong> — silicio, cómputo, el cerebro de la máquina autónoma. Geometría estrictamente modular: cuadrado de esquinas suaves, doce pines simétricos y un núcleo central sólido en degradado.</p>
+      <div class="specs" style="margin-top:20px">
+        <div class="spec"><span class="k">Geometría</span><span class="v">Cuadrado 70×70 · r16</span></div>
+        <div class="spec"><span class="k">Pines</span><span class="v">12 · simétricos</span></div>
+        <div class="spec"><span class="k">Núcleo</span><span class="v">30×30 · r8 · sólido</span></div>
+        <div class="spec"><span class="k">Trazo</span><span class="v">7u · remate redondo</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 CONSTRUCCIÓN ============ -->
+<section class="section" id="construccion">
+  <div class="shead">
+    <span class="snum">04</span>
+    <div>
+      <span class="eyebrow">Construcción</span>
+      <h2 style="margin-top:12px">Área de seguridad<br/>y tamaños mínimos.</h2>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div>
+      <div class="kicker"><span class="eyebrow">Área de respeto</span></div>
+      <div class="panel center" style="min-height:280px;padding:0">
+        <div style="border:1.5px dashed var(--faint);border-radius:10px;padding:clamp(28px,5vw,52px)">
+          <div class="lockup" style="align-items:center">
+            <span class="ico" style="width:56px;height:56px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span>
+            <span class="wm" style="font-size:38px"><span class="vend">Vend</span><span class="ai">AI</span></span>
+          </div>
+        </div>
+      </div>
+      <p class="small" style="margin-top:16px">El margen libre mínimo equivale a <strong>X</strong> = la altura del núcleo central del chip, en los cuatro lados. Ningún otro elemento puede invadir esa zona.</p>
+    </div>
+
+    <div>
+      <div class="kicker"><span class="eyebrow">Tamaños mínimos</span></div>
+      <div class="panel pad" style="display:flex;flex-direction:column;gap:28px">
+        <div style="display:flex;align-items:center;gap:20px">
+          <span class="ico" style="width:24px;height:24px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span>
+          <div>
+            <div style="font-weight:600">Isotipo solo</div>
+            <div class="small">24 px digital &middot; 8 mm impreso</div>
+          </div>
+        </div>
+        <hr class="hr"/>
+        <div style="display:flex;align-items:center;gap:20px">
+          <div class="lockup" style="align-items:center">
+            <span class="ico" style="width:28px;height:28px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span>
+            <span class="wm" style="font-size:20px"><span class="vend">Vend</span><span class="ai">AI</span></span>
+          </div>
+        </div>
+        <div class="small" style="margin-top:-14px">Logotipo completo &middot; mínimo 120 px / 28 mm de ancho</div>
+      </div>
+      <p class="small" style="margin-top:16px">Por debajo del mínimo, usa siempre el isotipo solo: el wordmark deja de ser legible antes que el chip.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 VERSIONES ============ -->
+<section class="section" id="versiones">
+  <div class="shead">
+    <span class="snum">05</span>
+    <div>
+      <span class="eyebrow">Versiones</span>
+      <h2 style="margin-top:12px">Un sistema, varias firmas.</h2>
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="dd">
+      <div class="stage">
+        <div class="lockup" style="align-items:center"><span class="ico" style="width:46px;height:46px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span><span class="wm" style="font-size:30px"><span class="vend">Vend</span><span class="ai">AI</span></span></div>
+      </div>
+      <div class="note"><span class="eyebrow" style="color:var(--ink-2)">Principal · horizontal</span></div>
+    </div>
+    <div class="dd">
+      <div class="stage" style="flex-direction:column;gap:12px">
+        <span class="ico" style="width:56px;height:56px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span>
+        <span class="wm" style="font-size:26px"><span class="vend">Vend</span><span class="ai">AI</span></span>
+      </div>
+      <div class="note"><span class="eyebrow" style="color:var(--ink-2)">Vertical · apilada</span></div>
+    </div>
+    <div class="dd">
+      <div class="stage"><span class="ico" style="width:64px;height:64px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span></div>
+      <div class="note"><span class="eyebrow" style="color:var(--ink-2)">Isotipo · Núcleo</span></div>
+    </div>
+
+    <div class="dd">
+      <div class="stage" style="color:var(--ink)">
+        <div class="lockup" style="align-items:center"><span class="ico" style="width:46px;height:46px"><svg viewBox="0 0 110 110"><use href="#chip-mono"/></svg></span><span class="wm ink" style="font-size:30px"><span class="vend">Vend</span><span class="ai">AI</span></span></div>
+      </div>
+      <div class="note"><span class="eyebrow" style="color:var(--ink-2)">Monocromo · tinta</span></div>
+    </div>
+    <div class="dd">
+      <div class="stage" style="background:var(--ink);color:#fff">
+        <div class="lockup" style="align-items:center"><span class="ico" style="width:46px;height:46px"><svg viewBox="0 0 110 110"><use href="#chip-mono"/></svg></span><span class="wm white" style="font-size:30px"><span class="vend">Vend</span><span class="ai">AI</span></span></div>
+      </div>
+      <div class="note"><span class="eyebrow" style="color:var(--ink-2)">Negativo · fondo oscuro</span></div>
+    </div>
+    <div class="dd">
+      <div class="stage">
+        <div class="lockup" style="align-items:center"><span class="ico" style="width:46px;height:46px"><svg viewBox="0 0 110 110"><use href="#chip-green"/></svg></span><span class="wm green" style="font-size:30px"><span class="vend">Vend</span><span class="ai">AI</span></span></div>
+      </div>
+      <div class="note"><span class="eyebrow" style="color:var(--ink-2)">Acento Crypto · verde</span></div>
+    </div>
+  </div>
+  <p class="small" style="margin-top:24px">La versión a degradado es la principal. El verde se reserva para contextos de la vertical Crypto. El monocromo (tinta o blanco) se usa cuando hay una sola tinta disponible o el fondo compite con el degradado.</p>
+</section>
+
+<!-- ============ 06 USOS INCORRECTOS ============ -->
+<section class="section" id="usos">
+  <div class="shead">
+    <span class="snum">06</span>
+    <div>
+      <span class="eyebrow">Usos incorrectos</span>
+      <h2 style="margin-top:12px">Lo que nunca debe pasar.</h2>
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="dd no">
+      <div class="stage"><div class="lockup" style="align-items:center;transform:rotate(-12deg)"><span class="ico" style="width:40px;height:40px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span><span class="wm" style="font-size:26px"><span class="vend">Vend</span><span class="ai">AI</span></span></div></div>
+      <div class="note"><span class="mark">✕</span><span>No rotar ni inclinar el logotipo.</span></div>
+    </div>
+    <div class="dd no">
+      <div class="stage"><div class="lockup" style="align-items:center;transform:scaleX(1.7)"><span class="ico" style="width:40px;height:40px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span><span class="wm" style="font-size:26px"><span class="vend">Vend</span><span class="ai">AI</span></span></div></div>
+      <div class="note"><span class="mark">✕</span><span>No deformar ni cambiar las proporciones.</span></div>
+    </div>
+    <div class="dd no">
+      <div class="stage"><div class="lockup" style="align-items:center"><span class="ico" style="width:40px;height:40px;color:#E8536B"><svg viewBox="0 0 110 110"><use href="#chip-mono"/></svg></span><span class="wm ink" style="font-size:26px;--ink:#E8536B"><span class="vend" style="-webkit-text-stroke-color:#E8536B">Vend</span><span class="ai">AI</span></span></div></div>
+      <div class="note"><span class="mark">✕</span><span>No recolorear fuera de la paleta oficial.</span></div>
+    </div>
+    <div class="dd no">
+      <div class="stage"><div class="lockup" style="align-items:center;filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))"><span class="ico" style="width:40px;height:40px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span><span class="wm" style="font-size:26px"><span class="vend">Vend</span><span class="ai">AI</span></span></div></div>
+      <div class="note"><span class="mark">✕</span><span>No añadir sombras, brillos ni efectos.</span></div>
+    </div>
+    <div class="dd no">
+      <div class="stage"><span class="wm" style="font-size:26px"><span class="ai">AI</span><span class="vend">Vend</span></span></div>
+      <div class="note"><span class="mark">✕</span><span>No reordenar “Vend” y “AI”, ni igualar sus pesos.</span></div>
+    </div>
+    <div class="dd no">
+      <div class="stage" style="background:linear-gradient(120deg,#2B7FF5,#46E4CF)"><div class="lockup" style="align-items:center"><span class="ico" style="width:40px;height:40px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span><span class="wm" style="font-size:26px"><span class="vend" style="-webkit-text-stroke-color:#fff">Vend</span><span class="ai" style="-webkit-text-fill-color:#fff">AI</span></span></div></div>
+      <div class="note"><span class="mark">✕</span><span>No colocar el degradado sobre fondos de bajo contraste.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 COLOR ============ -->
+<section class="section" id="color">
+  <div class="shead">
+    <span class="snum">07</span>
+    <div>
+      <span class="eyebrow">Color</span>
+      <h2 style="margin-top:12px">Señal sobre neutro.</h2>
+    </div>
+  </div>
+
+  <div class="kicker"><span class="eyebrow">Degradado de marca · “Signal”</span></div>
+  <div style="height:130px;border-radius:16px;background:var(--signal);display:flex;align-items:flex-end;padding:16px;margin-bottom:14px">
+    <span class="mono" style="color:rgba(255,255,255,.9);font-size:12px">#2B7FF5 → #1FB6E8 → #46E4CF · 120°</span>
+  </div>
+  <p class="small" style="margin-bottom:48px">El degradado es el activo cromático central. Se aplica al núcleo del chip y a “AI”. Dirección fija a 120°, de azul (abajo-izquierda) a aqua (arriba-derecha). Nunca se rota ni se recorta a un solo color sin necesidad.</p>
+
+  <div class="kicker"><span class="eyebrow">Núcleo cromático</span></div>
+  <div class="swatches" style="margin-bottom:36px">
+    <div class="sw"><div class="chip" style="background:#1A8CFF"></div><div class="meta"><div class="name">Signal Blue</div><div class="hex">#1A8CFF</div></div></div>
+    <div class="sw"><div class="chip" style="background:#22C9E6"></div><div class="meta"><div class="name">Cyan</div><div class="hex">#22C9E6</div></div></div>
+    <div class="sw"><div class="chip" style="background:#46E4CF"></div><div class="meta"><div class="name">Aqua</div><div class="hex">#46E4CF</div></div></div>
+    <div class="sw"><div class="chip" style="background:#16D399"></div><div class="meta"><div class="name">Crypto Green</div><div class="hex">#16D399</div></div></div>
+  </div>
+
+  <div class="kicker"><span class="eyebrow">Neutros</span></div>
+  <div class="ramp" style="margin-bottom:36px">
+    <div style="background:#0E1116;color:#fff">#0E1116</div>
+    <div style="background:#363C45;color:#fff">#363C45</div>
+    <div style="background:#737A84;color:#fff">#737A84</div>
+    <div style="background:#C7CCD3;color:#0E1116">#C7CCD3</div>
+    <div style="background:#EFF1F4;color:#737A84">#EFF1F4</div>
+    <div style="background:#FFFFFF;color:#737A84">#FFFFFF</div>
+  </div>
+
+  <div class="kicker"><span class="eyebrow">Codificación de verticales</span></div>
+  <div class="grid3">
+    <div class="panel pad"><div class="kicker"><span class="dot" style="background:var(--blue)"></span><strong>AI-Native</strong></div><p class="small" style="margin:0">Degradado Signal · azul → aqua</p></div>
+    <div class="panel pad"><div class="kicker"><span class="dot" style="background:var(--green)"></span><strong>Crypto</strong></div><p class="small" style="margin:0">Crypto Green · #16D399</p></div>
+    <div class="panel pad"><div class="kicker"><span class="dot" style="background:var(--violet)"></span><strong>Tradicional</strong></div><p class="small" style="margin:0">Violet · #7C5CFC</p></div>
+  </div>
+</section>
+
+<!-- ============ 08 TIPOGRAFÍA ============ -->
+<section class="section" id="tipografia">
+  <div class="shead">
+    <span class="snum">08</span>
+    <div>
+      <span class="eyebrow">Tipografía</span>
+      <h2 style="margin-top:12px">Mono para firmar,<br/>grotesque para hablar.</h2>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel pad">
+      <div class="kicker"><span class="eyebrow">Display & marca</span></div>
+      <div class="mono" style="font-size:72px;font-weight:600;line-height:1;letter-spacing:-0.03em">Aa</div>
+      <h3 class="mono" style="margin-top:18px">JetBrains Mono</h3>
+      <p class="small" style="margin-top:8px">Titulares, wordmark, etiquetas y datos. Aporta el carácter técnico del laboratorio. Pesos 500–700 en display; 400–500 en etiquetas con tracking +0.18em en mayúsculas.</p>
+      <div class="mono small" style="margin-top:16px;color:var(--ink-2)">ABCDEFG · abcdefg · 0123456789 · →{}[]</div>
+    </div>
+    <div class="panel pad">
+      <div class="kicker"><span class="eyebrow">Texto</span></div>
+      <div style="font-family:'Space Grotesk';font-size:72px;font-weight:500;line-height:1;letter-spacing:-0.02em">Aa</div>
+      <h3 style="margin-top:18px;font-family:'Space Grotesk'">Space Grotesk</h3>
+      <p class="small" style="margin-top:8px">Cuerpo de texto, descripciones, párrafos largos. Neutra pero con un guiño geométrico que dialoga con la mono. Pesos 400–600.</p>
+      <div class="small" style="margin-top:16px;color:var(--ink-2)">ABCDEFG · abcdefg · 0123456789</div>
+    </div>
+  </div>
+
+  <div class="specs" style="margin-top:40px">
+    <div class="spec"><span class="k">Display / H1</span><span class="v mono">JetBrains Mono 600 · −3.5% tracking</span></div>
+    <div class="spec"><span class="k">Título / H2–H3</span><span class="v mono">JetBrains Mono 600</span></div>
+    <div class="spec"><span class="k">Etiqueta / eyebrow</span><span class="v mono">JetBrains Mono 500 · UPPER · +18%</span></div>
+    <div class="spec"><span class="k">Cuerpo</span><span class="v">Space Grotesk 400 · 17/27</span></div>
+    <div class="spec"><span class="k">Destacado</span><span class="v">Space Grotesk 500–600</span></div>
+  </div>
+
+  <div class="kicker" style="margin-top:56px"><span class="eyebrow">Direcciones alternativas — en exploración</span></div>
+  <p class="small" style="max-width:760px;margin-bottom:24px">JetBrains Mono + Space Grotesk es una base segura pero muy transitada en el sector. Estas cuatro direcciones mantienen el carácter técnico del lab con una voz más propia. Cada una conserva el wordmark “Vend” contorno / “AI” sólido. <strong>Elige una y actualizo todo el manual y los recursos.</strong></p>
+
+  <div class="typevars">
+    <div class="tv">
+      <span class="wm" style="font-family:'Martian Mono',monospace;font-weight:600"><span class="vend">Vend</span><span class="ai">AI</span></span>
+      <div class="vh" style="font-family:'Martian Mono',monospace;font-weight:600">Retail autónomo.</div>
+      <div class="vb" style="font-family:'Hanken Grotesk',sans-serif">Máquinas que operan solas, software en el núcleo y ejecución por encima de la teoría.</div>
+      <div class="note">Reticular, de ingeniería — casi un esquema técnico. Hanken Grotesk da calidez y aire al texto largo.</div>
+      <div class="lab"><span class="pill">Display · Martian Mono</span><span class="pill">Texto · Hanken Grotesk</span></div>
+    </div>
+
+    <div class="tv">
+      <span class="wm" style="font-family:'Spline Sans Mono',monospace;font-weight:600"><span class="vend">Vend</span><span class="ai">AI</span></span>
+      <div class="vh" style="font-family:'Spline Sans Mono',monospace;font-weight:600">Retail autónomo.</div>
+      <div class="vb" style="font-family:'Spline Sans',sans-serif">Máquinas que operan solas, software en el núcleo y ejecución por encima de la teoría.</div>
+      <div class="note">Superfamilia: una sola voz en mono y sans. Máxima cohesión entre la landing y el backoffice.</div>
+      <div class="lab"><span class="pill">Display · Spline Sans Mono</span><span class="pill">Texto · Spline Sans</span></div>
+    </div>
+
+    <div class="tv">
+      <span class="wm" style="font-family:'Unbounded',sans-serif;font-weight:600;letter-spacing:-0.04em"><span class="vend">Vend</span><span class="ai">AI</span></span>
+      <div class="vh" style="font-family:'Unbounded',sans-serif;font-weight:600;letter-spacing:-0.02em">Retail autónomo.</div>
+      <div class="vb" style="font-family:'Familjen Grotesk',sans-serif">Máquinas que operan solas, software en el núcleo y ejecución por encima de la teoría.</div>
+      <div class="note">Display geométrico y rotundo, muy “lab de vanguardia”. Familjen Grotesk mantiene el cuerpo neutro y legible.</div>
+      <div class="lab"><span class="pill">Display · Unbounded</span><span class="pill">Texto · Familjen Grotesk</span></div>
+    </div>
+
+    <div class="tv">
+      <span class="wm" style="font-family:'DM Mono',monospace;font-weight:500"><span class="vend">Vend</span><span class="ai">AI</span></span>
+      <div class="vh" style="font-family:'DM Mono',monospace;font-weight:500">Retail autónomo.</div>
+      <div class="vb" style="font-family:'DM Sans',sans-serif">Máquinas que operan solas, software en el núcleo y ejecución por encima de la teoría.</div>
+      <div class="note">Editorial-tech, refinada y sobria. DM Sans es de las mejores fuentes para UI de producto y tablas de backoffice.</div>
+      <div class="lab"><span class="pill">Display · DM Mono</span><span class="pill">Texto · DM Sans</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 SISTEMA GRÁFICO ============ -->
+<section class="section" id="sistema">
+  <div class="shead">
+    <span class="snum">09</span>
+    <div>
+      <span class="eyebrow">Sistema gráfico</span>
+      <h2 style="margin-top:12px">Lenguaje de cómputo.</h2>
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="panel" style="overflow:hidden">
+      <div style="height:180px;background:
+        radial-gradient(circle at 1px 1px, var(--line) 1.4px, transparent 0) 0 0/22px 22px,
+        var(--paper)"></div>
+      <div class="pad" style="padding:20px 22px"><strong>Retícula de pines</strong><p class="small" style="margin:6px 0 0">Malla modular derivada del chip. Base para diagramas, fondos y composición.</p></div>
+    </div>
+    <div class="panel" style="overflow:hidden">
+      <div style="height:180px;display:flex;align-items:center;justify-content:center;background:var(--ink)">
+        <svg width="150" height="60" viewBox="0 0 156 100"><g fill="none" stroke="url(#g-signal)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="28" x2="66" y2="28"/><line x1="9" y1="50" x2="98" y2="50"/><line x1="9" y1="72" x2="50" y2="72"/><polyline points="92,20 130,50 92,80"/></g></svg>
+      </div>
+      <div class="pad" style="padding:20px 22px"><strong>Líneas de señal</strong><p class="small" style="margin:6px 0 0">La flecha de la marca original vive como recurso de movimiento y dirección.</p></div>
+    </div>
+    <div class="panel" style="overflow:hidden">
+      <div style="height:180px;background:var(--signal)"></div>
+      <div class="pad" style="padding:20px 22px"><strong>Degradado como superficie</strong><p class="small" style="margin:6px 0 0">Permitido en grandes superficies y bloques, nunca detrás del propio degradado del logo.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 ICONOGRAFÍA ============ -->
+<section class="section" id="iconografia">
+  <div class="shead">
+    <span class="snum">10</span>
+    <div>
+      <span class="eyebrow">Iconografía</span>
+      <h2 style="margin-top:12px">Set de íconos.</h2>
+    </div>
+  </div>
+
+  <p class="lead" style="max-width:780px;margin-bottom:14px">Una familia de íconos de línea, derivada de la geometría del chip: trazo uniforme, remates redondos y esquinas suaves. Pensada para inyectarse directo en la <strong>landing</strong> y el <strong>backoffice</strong>.</p>
+  <div class="specs" style="max-width:560px;margin-bottom:44px">
+    <div class="spec"><span class="k">Retícula</span><span class="v">24 × 24 px</span></div>
+    <div class="spec"><span class="k">Trazo</span><span class="v">1.8 px · remate y unión redondos</span></div>
+    <div class="spec"><span class="k">Color</span><span class="v mono">currentColor · hereda del texto</span></div>
+    <div class="spec"><span class="k">Formato</span><span class="v mono">SVG · &lt;use href="#ic-…"&gt;</span></div>
+  </div>
+
+  <div class="kicker"><span class="eyebrow">Marca & producto</span></div>
+  <div class="icongrid" style="margin-bottom:28px">
+    <div class="iconcell acc"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-chip"/></svg></span><span class="nm">chip</span></div>
+    <div class="iconcell acc"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-arrow"/></svg></span><span class="nm">signal</span></div>
+    <div class="iconcell"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-vending"/></svg></span><span class="nm">vending</span></div>
+    <div class="iconcell"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-package"/></svg></span><span class="nm">package</span></div>
+    <div class="iconcell"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-bolt"/></svg></span><span class="nm">autonomous</span></div>
+    <div class="iconcell"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-spark"/></svg></span><span class="nm">ai-spark</span></div>
+  </div>
+
+  <div class="kicker"><span class="eyebrow">Backoffice & datos</span></div>
+  <div class="icongrid" style="margin-bottom:28px">
+    <div class="iconcell"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-dashboard"/></svg></span><span class="nm">dashboard</span></div>
+    <div class="iconcell"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-analytics"/></svg></span><span class="nm">analytics</span></div>
+    <div class="iconcell"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-layers"/></svg></span><span class="nm">inventory</span></div>
+    <div class="iconcell"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-users"/></svg></span><span class="nm">users</span></div>
+    <div class="iconcell"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-sliders"/></svg></span><span class="nm">settings</span></div>
+    <div class="iconcell grn"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-wallet"/></svg></span><span class="nm">wallet</span></div>
+    <div class="iconcell grn"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-token"/></svg></span><span class="nm">token</span></div>
+    <div class="iconcell grn"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-swap"/></svg></span><span class="nm">swap</span></div>
+    <div class="iconcell"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-refresh"/></svg></span><span class="nm">sync</span></div>
+  </div>
+
+  <div class="kicker"><span class="eyebrow">Estado & navegación</span></div>
+  <div class="icongrid" style="margin-bottom:28px">
+    <div class="iconcell"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-bell"/></svg></span><span class="nm">alerts</span></div>
+    <div class="iconcell"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-shield"/></svg></span><span class="nm">security</span></div>
+    <div class="iconcell"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-search"/></svg></span><span class="nm">search</span></div>
+    <div class="iconcell"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-location"/></svg></span><span class="nm">location</span></div>
+    <div class="iconcell"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-clock"/></svg></span><span class="nm">clock</span></div>
+    <div class="iconcell"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-check"/></svg></span><span class="nm">check</span></div>
+    <div class="iconcell"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-plus"/></svg></span><span class="nm">add</span></div>
+  </div>
+
+  <div class="kicker"><span class="eyebrow">Contraste sobre fondo oscuro</span></div>
+  <div class="icongrid">
+    <div class="iconcell on"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-vending"/></svg></span><span class="nm">vending</span></div>
+    <div class="iconcell on"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-dashboard"/></svg></span><span class="nm">dashboard</span></div>
+    <div class="iconcell on"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-token"/></svg></span><span class="nm">token</span></div>
+    <div class="iconcell on"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-analytics"/></svg></span><span class="nm">analytics</span></div>
+    <div class="iconcell on"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-shield"/></svg></span><span class="nm">security</span></div>
+    <div class="iconcell on"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-bolt"/></svg></span><span class="nm">autonomous</span></div>
+  </div>
+</section>
+
+<!-- ============ 11 APLICACIONES ============ -->
+<section class="section" id="aplicaciones">
+  <div class="shead">
+    <span class="snum">11</span>
+    <div>
+      <span class="eyebrow">Aplicaciones</span>
+      <h2 style="margin-top:12px">La marca en el mundo.</h2>
+    </div>
+  </div>
+
+  <div class="kicker"><span class="eyebrow">App icon & avatar</span></div>
+  <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:48px">
+    <div style="text-align:center">
+      <div class="center" style="width:120px;height:120px;border-radius:28px;background:var(--ink)"><span class="ico" style="width:64px;height:64px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span></div>
+      <div class="small mono" style="margin-top:10px;font-size:11px">Principal</div>
+    </div>
+    <div style="text-align:center">
+      <div class="center" style="width:120px;height:120px;border-radius:28px;background:var(--signal);color:#fff"><span class="ico" style="width:64px;height:64px"><svg viewBox="0 0 110 110"><use href="#chip-mono"/></svg></span></div>
+      <div class="small mono" style="margin-top:10px;font-size:11px">Degradado</div>
+    </div>
+    <div style="text-align:center">
+      <div class="center" style="width:120px;height:120px;border-radius:28px;background:#fff;border:1px solid var(--line)"><span class="ico" style="width:64px;height:64px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span></div>
+      <div class="small mono" style="margin-top:10px;font-size:11px">Claro</div>
+    </div>
+    <div style="text-align:center">
+      <div class="center" style="width:120px;height:120px;border-radius:50%;background:#0AB37A;color:#fff"><span class="ico" style="width:60px;height:60px"><svg viewBox="0 0 110 110"><use href="#chip-mono"/></svg></span></div>
+      <div class="small mono" style="margin-top:10px;font-size:11px">Avatar · Crypto</div>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-bottom:48px">
+    <div>
+      <div class="kicker"><span class="eyebrow">Tarjeta</span></div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div class="dark" style="width:260px;height:150px;padding:22px;display:flex;flex-direction:column;justify-content:space-between">
+          <span class="ico" style="width:40px;height:40px;color:#fff"><svg viewBox="0 0 110 110"><use href="#chip-mono"/></svg></span>
+          <div><div class="mono" style="font-size:13px;color:#fff">VendAI Labs</div><div class="mono small" style="font-size:11px">build · ship · repeat</div></div>
+        </div>
+        <div class="panel" style="width:260px;height:150px;padding:22px;display:flex;flex-direction:column;justify-content:space-between">
+          <div class="lockup" style="align-items:center"><span class="ico" style="width:26px;height:26px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span><span class="wm" style="font-size:17px"><span class="vend">Vend</span><span class="ai">AI</span></span></div>
+          <div class="mono small" style="font-size:11px;line-height:1.7">Nombre Apellido<br/>rol@vendai.lab</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="kicker"><span class="eyebrow">Vending · marca sobre producto</span></div>
+      <div class="ph" style="height:150px;position:relative">
+        <div style="position:absolute;top:14px;left:14px"><div class="lockup" style="align-items:center"><span class="ico" style="width:22px;height:22px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span><span class="wm" style="font-size:15px"><span class="vend">Vend</span><span class="ai">AI</span></span></div></div>
+        render / foto de la máquina de vending VendAI
+      </div>
+    </div>
+  </div>
+
+  <div class="dark pad" style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap">
+    <div class="lockup" style="align-items:center"><span class="ico" style="width:34px;height:34px;color:#fff"><svg viewBox="0 0 110 110"><use href="#chip-mono"/></svg></span><span class="wm white" style="font-size:22px"><span class="vend">Vend</span><span class="ai">AI</span></span></div>
+    <span class="mono small" style="font-size:12px">Cabecera web · fondo oscuro · isotipo + wordmark en negativo</span>
+  </div>
+</section>
+
+<!-- ============ 12 RECURSOS ============ -->
+<section class="section" id="recursos">
+  <div class="shead">
+    <span class="snum">12</span>
+    <div>
+      <span class="eyebrow">Recursos descargables</span>
+      <h2 style="margin-top:12px">Listo para la web.</h2>
+    </div>
+  </div>
+
+  <p class="lead" style="max-width:780px;margin-bottom:48px">Paquete de archivos exportados para inyectar directamente en la <strong>landing</strong> y el <strong>backoffice</strong>: favicon, íconos de aplicación, isotipos vectoriales, imagen social y manifiesto.</p>
+
+  <div class="kicker"><span class="eyebrow">Favicon · pestaña del navegador</span></div>
+  <div style="margin-bottom:14px">
+    <div class="tabmock"><img src="../recursos/favicon-32.png" alt=""/><span>VendAI · Laboratorio</span></div>
+  </div>
+  <div class="restiles" style="margin-bottom:44px">
+    <div class="rt"><img src="../recursos/favicon-16.png" width="16" height="16" alt=""/><span class="cap">16 px</span></div>
+    <div class="rt"><img src="../recursos/favicon-32.png" width="32" height="32" alt=""/><span class="cap">32 px</span></div>
+    <div class="rt"><img src="../recursos/favicon-48.png" width="48" height="48" alt=""/><span class="cap">48 px</span></div>
+    <div class="rt"><img src="../recursos/favicon.svg" width="48" height="48" alt=""/><span class="cap">SVG · escalable</span></div>
+  </div>
+
+  <div class="grid2" style="margin-bottom:44px">
+    <div>
+      <div class="kicker"><span class="eyebrow">Íconos de aplicación</span></div>
+      <div class="restiles">
+        <div class="rt"><img src="../recursos/icon-192.png" width="84" height="84" alt=""/><span class="cap">icon-192</span></div>
+        <div class="rt"><img src="../recursos/icon-512.png" width="84" height="84" alt=""/><span class="cap">icon-512</span></div>
+        <div class="rt"><img src="../recursos/apple-touch-icon.png" width="84" height="84" alt="" style="border-radius:18px"/><span class="cap">apple-touch</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="kicker"><span class="eyebrow">Maskable · zona segura</span></div>
+      <div class="restiles">
+        <div class="rt"><div class="maskwrap"><img src="../recursos/icon-maskable.png" width="84" height="84" alt=""/><span class="ring"></span></div><span class="cap">Android adaptable</span></div>
+      </div>
+      <p class="small" style="margin-top:14px">El círculo punteado marca la zona visible tras el recorte del sistema. El isotipo se reduce al 40% para no perderse.</p>
+    </div>
+  </div>
+
+  <div class="kicker"><span class="eyebrow">Imagen social · Open Graph · 1200×630</span></div>
+  <img src="../recursos/og-image.png" alt="VendAI OG" style="width:100%;max-width:680px;border-radius:16px;border:1px solid var(--line);display:block;margin-bottom:44px"/>
+
+  <div class="grid2">
+    <div>
+      <div class="kicker"><span class="eyebrow">Archivos incluidos</span></div>
+      <div class="filelist">
+        <div class="filerow"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-chip"/></svg></span>favicon.svg</div>
+        <div class="filerow"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-chip"/></svg></span>favicon-16/32/48.png</div>
+        <div class="filerow"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-dashboard"/></svg></span>icon-192/512.png</div>
+        <div class="filerow"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-dashboard"/></svg></span>apple-touch-icon.png</div>
+        <div class="filerow"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-layers"/></svg></span>icon-maskable.png</div>
+        <div class="filerow"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-spark"/></svg></span>og-image.png</div>
+        <div class="filerow"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-token"/></svg></span>isotipo · grad/mono/blanco.svg</div>
+        <div class="filerow"><span class="ic"><svg viewBox="0 0 24 24"><use href="#ic-sliders"/></svg></span>site.webmanifest</div>
+      </div>
+    </div>
+    <div>
+      <div class="kicker"><span class="eyebrow">Snippet para el &lt;head&gt;</span></div>
+      <div class="code"><span class="cm">&lt;!-- VendAI · favicon & social --&gt;</span>
+<span class="tg">&lt;link</span> <span class="at">rel</span>=<span class="vl">"icon"</span> <span class="at">href</span>=<span class="vl">"/favicon.svg"</span> <span class="at">type</span>=<span class="vl">"image/svg+xml"</span><span class="tg">&gt;</span>
+<span class="tg">&lt;link</span> <span class="at">rel</span>=<span class="vl">"icon"</span> <span class="at">href</span>=<span class="vl">"/favicon-32.png"</span> <span class="at">sizes</span>=<span class="vl">"32x32"</span><span class="tg">&gt;</span>
+<span class="tg">&lt;link</span> <span class="at">rel</span>=<span class="vl">"apple-touch-icon"</span> <span class="at">href</span>=<span class="vl">"/apple-touch-icon.png"</span><span class="tg">&gt;</span>
+<span class="tg">&lt;link</span> <span class="at">rel</span>=<span class="vl">"manifest"</span> <span class="at">href</span>=<span class="vl">"/site.webmanifest"</span><span class="tg">&gt;</span>
+<span class="tg">&lt;meta</span> <span class="at">name</span>=<span class="vl">"theme-color"</span> <span class="at">content</span>=<span class="vl">"#0E1116"</span><span class="tg">&gt;</span>
+<span class="tg">&lt;meta</span> <span class="at">property</span>=<span class="vl">"og:image"</span> <span class="at">content</span>=<span class="vl">"/og-image.png"</span><span class="tg">&gt;</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CIERRE ============ -->
+<footer class="section" id="cierre" style="border-top:1px solid var(--line)">
+  <div class="center" style="flex-direction:column;text-align:center;gap:28px;padding:40px 0">
+    <span class="ico" style="width:72px;height:72px"><svg viewBox="0 0 110 110"><use href="#chip-grad"/></svg></span>
+    <h2 style="max-width:14ch">Construimos y enviamos.</h2>
+    <p class="small" style="max-width:46ch">Este manual es un documento vivo. Para versiones de archivo del logotipo, plantillas o dudas de aplicación, escribe al equipo de marca.</p>
+    <div class="eyebrow">VendAI Labs &middot; Manual de Marca V1.0 &middot; Mayo 2026</div>
+  </div>
+</footer>
+
+<script>
+  // Scrollspy del índice lateral
+  const links = [...document.querySelectorAll('.nav a')];
+  const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const a = map.get(e.target.id);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  document.querySelectorAll('section[id], footer[id]').forEach(s => io.observe(s));
+</script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Familjen+Grotesk:wght@400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   VendAI · Design System
+   Manual de Marca v1.0 — referencia: src/assets/brand/
+   All colors MUST be HSL.
+   ============================================================ */
+
+@layer base {
+  :root {
+    /* ---------- Neutros fríos (escala de la marca) ---------- */
+    --ink: 218 26% 8%;          /* #0E1116 */
+    --ink-2: 218 12% 24%;       /* #363C45 */
+    --muted-ink: 218 7% 49%;    /* #737A84 */
+    --faint: 218 8% 68%;        /* #A6ACB5 */
+    --line: 220 13% 92%;        /* #E7E9ED */
+    --line-2: 220 13% 95%;      /* #EFF1F4 */
+    --panel: 220 11% 97%;       /* #F5F6F8 */
+    --paper: 0 0% 100%;         /* #FFFFFF */
+    --vend-stroke: 218 10% 75%; /* #B8BEC8 */
+
+    /* ---------- Núcleo cromático VendAI ---------- */
+    --signal-blue: 211 100% 55%;   /* #1A8CFF */
+    --cyan: 188 80% 52%;           /* #22C9E6 */
+    --aqua: 171 75% 59%;           /* #46E4CF */
+    --crypto-green: 162 81% 46%;   /* #16D399 */
+    --ventures-violet: 250 96% 68%;/* #7C5CFC */
+
+    /* ---------- Shadcn tokens mapeados a la marca ---------- */
+    --background: var(--paper);
+    --foreground: var(--ink);
+
+    --card: var(--paper);
+    --card-foreground: var(--ink);
+
+    --popover: var(--paper);
+    --popover-foreground: var(--ink);
+
+    --primary: var(--ink);
+    --primary-foreground: var(--paper);
+
+    --secondary: var(--panel);
+    --secondary-foreground: var(--ink);
+
+    --muted: var(--panel);
+    --muted-foreground: var(--muted-ink);
+
+    --accent: var(--signal-blue);
+    --accent-foreground: var(--paper);
+
+    --destructive: 351 75% 62%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: var(--line);
+    --input: var(--line);
+    --ring: var(--signal-blue);
+
+    --radius: 0.875rem;
+
+    /* ---------- Sidebar (app shell, fondo dark) ---------- */
+    --sidebar-background: var(--ink);
+    --sidebar-foreground: 220 11% 86%;
+    --sidebar-primary: var(--signal-blue);
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 218 18% 14%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 218 18% 16%;
+    --sidebar-ring: var(--signal-blue);
+  }
+
+  .dark {
+    --background: var(--ink);
+    --foreground: 220 13% 92%;
+    --card: 218 18% 12%;
+    --card-foreground: 220 13% 92%;
+    --popover: 218 18% 12%;
+    --popover-foreground: 220 13% 92%;
+    --primary: var(--paper);
+    --primary-foreground: var(--ink);
+    --secondary: 218 18% 14%;
+    --secondary-foreground: 220 13% 92%;
+    --muted: 218 18% 14%;
+    --muted-foreground: 218 8% 60%;
+    --accent: var(--signal-blue);
+    --accent-foreground: var(--paper);
+    --border: 218 18% 18%;
+    --input: 218 18% 18%;
+    --ring: var(--signal-blue);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: "Space Grotesk", system-ui, -apple-system, sans-serif;
+    font-feature-settings: "ss01", "cv11";
+  }
+  h1, h2, h3, h4 {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  ::selection {
+    background: hsl(var(--cyan) / 0.22);
+  }
+}
+
+@layer components {
+  /* ---------- Eyebrow / kicker mono ---------- */
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: hsl(var(--muted-ink));
+  }
+
+  /* ---------- Wordmark: Vend (contorno) + AI (gradient) ---------- */
+  .wm {
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: baseline;
+  }
+  .wm .vend {
+    -webkit-text-stroke: 1.4px hsl(var(--vend-stroke));
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+  .wm .ai {
+    background: linear-gradient(120deg, #2B7FF5 0%, #1FB6E8 52%, #46E4CF 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+  .wm.on-dark .vend {
+    -webkit-text-stroke-color: hsl(0 0% 100% / 0.55);
+  }
+  .wm.mono .vend {
+    -webkit-text-stroke-color: hsl(var(--ink));
+  }
+  .wm.mono .ai {
+    background: none;
+    -webkit-text-fill-color: hsl(var(--ink));
+    color: hsl(var(--ink));
+  }
+  .wm.white .vend {
+    -webkit-text-stroke-color: hsl(0 0% 100% / 0.85);
+  }
+  .wm.white .ai {
+    background: none;
+    -webkit-text-fill-color: #fff;
+    color: #fff;
+  }
+
+  /* ---------- Tag / chip-pill mono ---------- */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: hsl(var(--muted-ink));
+    border: 1px solid hsl(var(--line));
+    border-radius: 999px;
+    padding: 6px 12px;
+    background: hsl(var(--paper));
+  }
+  .tag .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex: none;
+  }
+
+  /* ---------- Surface scaffolding ---------- */
+  .panel {
+    background: hsl(var(--panel));
+    border: 1px solid hsl(var(--line));
+    border-radius: var(--radius);
+  }
+
+  /* ---------- Hairline rules ---------- */
+  .rule {
+    height: 1px;
+    background: hsl(var(--line));
+    border: 0;
+  }
+
+  /* ---------- Form inputs ---------- */
+  .form-input {
+    @apply w-full bg-paper border border-line rounded-xl px-4 py-3 text-[15px] text-ink placeholder:text-faint focus:outline-none focus:border-ink/40 focus:ring-2 focus:ring-signal-blue/15 transition-colors;
+  }
+  select.form-input {
+    @apply appearance-none cursor-pointer pr-10;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%23737A84' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+  }
+}
+
+@layer utilities {
+  .bg-signal {
+    background-image: linear-gradient(120deg, #2B7FF5 0%, #1FB6E8 52%, #46E4CF 100%);
+  }
+  .bg-signal-green {
+    background-image: linear-gradient(120deg, #1FB6E8 0%, #19D2BC 50%, #16D399 100%);
+  }
+  .text-signal {
+    background: linear-gradient(120deg, #2B7FF5 0%, #1FB6E8 52%, #46E4CF 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .cover-aura {
+    background:
+      radial-gradient(120% 90% at 85% 15%, hsl(var(--cyan) / 0.08), transparent 55%),
+      radial-gradient(90% 80% at 10% 95%, hsl(var(--crypto-green) / 0.07), transparent 50%),
+      hsl(var(--paper));
+  }
+}

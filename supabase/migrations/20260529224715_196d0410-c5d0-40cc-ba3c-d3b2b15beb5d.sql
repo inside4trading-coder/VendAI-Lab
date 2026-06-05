@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.lead_belongs_to_user(UUID, UUID) FROM PUBLIC, anon, authenticated;
