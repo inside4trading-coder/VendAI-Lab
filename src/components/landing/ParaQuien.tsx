@@ -16,7 +16,7 @@ const venues = [
   {
     icon: Building2,
     title: "Oficinas",
-    body: "Más de 50 empleados necesitan un punto de avituallamiento. Beneficio corporativo sin coste.",
+    body: "Un punto de avituallamiento para tus equipos sin gestionarlo tú. Beneficio corporativo a coste cero.",
   },
   {
     icon: Trophy,

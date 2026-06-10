@@ -52,17 +52,21 @@ export function Contacto() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <Field label="Nombre" name="name" required>
                   <input
+                    id="name"
                     name="name"
                     required
+                    autoComplete="name"
                     className="form-input"
                     placeholder="Tu nombre"
                   />
                 </Field>
                 <Field label="Email" name="email" required>
                   <input
+                    id="email"
                     name="email"
                     type="email"
                     required
+                    autoComplete="email"
                     className="form-input"
                     placeholder="tu@empresa.com"
                   />
@@ -72,14 +76,16 @@ export function Contacto() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <Field label="Teléfono" name="phone">
                   <input
+                    id="phone"
                     name="phone"
                     type="tel"
+                    autoComplete="tel"
                     className="form-input"
                     placeholder="+34 600 000 000"
                   />
                 </Field>
                 <Field label="Tipo de establecimiento" name="venue" required>
-                  <select name="venue" required className="form-input">
+                  <select id="venue" name="venue" required className="form-input">
                     <option value="">Selecciona…</option>
                     {venueTypes.map((v) => (
                       <option key={v} value={v}>
@@ -92,6 +98,7 @@ export function Contacto() {
 
               <Field label="Mensaje" name="message">
                 <textarea
+                  id="message"
                   name="message"
                   rows={4}
                   className="form-input resize-none"

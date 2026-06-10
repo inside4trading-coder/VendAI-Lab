@@ -37,7 +37,7 @@ export function SiteHeader() {
           <Logo size={26} />
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-7">
+        <nav aria-label="Principal" className="hidden lg:flex items-center gap-7">
           {nav.map((item) => (
             <a
               key={item.href}
