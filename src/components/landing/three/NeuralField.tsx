@@ -163,14 +163,14 @@ function Field({ pointer }: { pointer: React.MutableRefObject<{ x: number; y: nu
           <bufferAttribute attach="attributes-position" args={[pointPositions, 3]} />
           <bufferAttribute attach="attributes-color" args={[pointColors, 3]} />
         </bufferGeometry>
+        {/* Blending normal: sobre fondo claro el aditivo se pierde hacia blanco */}
         <pointsMaterial
-          size={0.16}
+          size={0.18}
           map={dotTex}
           vertexColors
           transparent
-          opacity={0.85}
+          opacity={0.7}
           depthWrite={false}
-          blending={THREE.AdditiveBlending}
           sizeAttenuation
         />
       </points>
@@ -182,9 +182,8 @@ function Field({ pointer }: { pointer: React.MutableRefObject<{ x: number; y: nu
         <lineBasicMaterial
           vertexColors
           transparent
-          opacity={0.16}
+          opacity={0.22}
           depthWrite={false}
-          blending={THREE.AdditiveBlending}
         />
       </lineSegments>
     </group>

@@ -4,7 +4,7 @@ import { HeroBackground } from "./HeroBackground";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative isolate overflow-hidden">
       {/* Aura de fondo signal-blue + crypto-green sutil (fallback estático del 3D) */}
       <div
         aria-hidden
