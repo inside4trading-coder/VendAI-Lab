@@ -1,13 +1,14 @@
 import { ArrowRight } from "lucide-react";
 import { AnimatedChip } from "@/components/brand/AnimatedChip";
+import { HeroBackground } from "./HeroBackground";
 
 export function Hero() {
   return (
     <section className="relative overflow-hidden">
-      {/* Aura de fondo signal-blue + crypto-green sutil */}
+      {/* Aura de fondo signal-blue + crypto-green sutil (fallback estático del 3D) */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-10"
+        className="absolute inset-0 -z-20"
         style={{
           background: `
             radial-gradient(60% 50% at 78% 25%, hsl(var(--signal-blue) / 0.10), transparent 60%),
@@ -16,6 +17,11 @@ export function Hero() {
           `,
         }}
       />
+
+      {/* Campo de partículas 3D (desktop, motion OK) */}
+      <div aria-hidden className="absolute inset-0 -z-10">
+        <HeroBackground />
+      </div>
 
       <div className="container pt-16 pb-24 md:pt-24 md:pb-32">
         <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 items-center">
