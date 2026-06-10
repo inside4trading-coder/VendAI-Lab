@@ -45,14 +45,14 @@ export function Hero() {
             <div className="mt-9 flex flex-col sm:flex-row gap-3">
               <a
                 href="#contacto"
-                className="group inline-flex items-center justify-center gap-2 bg-signal text-paper font-mono text-[12.5px] tracking-[0.08em] uppercase px-6 py-3.5 rounded-full hover:opacity-95 transition-opacity shadow-[0_8px_30px_-8px_hsl(var(--signal-blue)/0.55)]"
+                className="group inline-flex items-center justify-center gap-2 bg-signal text-paper font-mono text-[12.5px] tracking-[0.08em] uppercase px-6 py-3.5 rounded-full transition-[transform,box-shadow] duration-300 shadow-[0_8px_30px_-8px_hsl(var(--signal-blue)/0.55)] hover:scale-[1.02] hover:shadow-[0_14px_44px_-10px_hsl(var(--signal-blue)/0.75)] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal-blue focus-visible:ring-offset-2"
               >
                 Solicitar instalación gratuita
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </a>
               <a
                 href="#inversores"
-                className="inline-flex items-center justify-center gap-2 border border-ink/15 text-ink font-mono text-[12.5px] tracking-[0.08em] uppercase px-6 py-3.5 rounded-full hover:border-ink/40 transition-colors"
+                className="inline-flex items-center justify-center gap-2 border border-ink/15 text-ink font-mono text-[12.5px] tracking-[0.08em] uppercase px-6 py-3.5 rounded-full hover:border-ink/40 hover:bg-ink/[0.03] hover:scale-[1.02] active:scale-[0.99] transition-[border-color,background-color,transform] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal-blue focus-visible:ring-offset-2"
               >
                 Soy inversor
               </a>

@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { useInView } from "@/hooks/useInView";
+import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface RevealProps {
@@ -9,20 +9,21 @@ interface RevealProps {
   as?: "div" | "section" | "article" | "header";
 }
 
+const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
+
 /**
- * Wrapper de entrada fade-up cuando entra en viewport.
+ * Wrapper de entrada fade-up cuando entra en viewport (framer-motion).
+ * Requiere <LazyMotion> en un ancestro (ver SiteLayout).
  */
-export function Reveal({ children, className, delay = 0, as: Tag = "div" }: RevealProps) {
-  const { ref, inView } = useInView<HTMLDivElement>();
+export function Reveal({ children, className, delay = 0, as = "div" }: RevealProps) {
+  const Tag = m[as];
   return (
     <Tag
-      ref={ref as never}
-      className={cn(
-        "transition-all duration-700 ease-out will-change-transform",
-        inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3",
-        className,
-      )}
-      style={{ transitionDelay: `${delay}ms` }}
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "0px 0px -60px 0px", amount: 0.12 }}
+      transition={{ duration: 0.7, delay: delay / 1000, ease: EASE_OUT_EXPO }}
+      className={cn("will-change-transform", className)}
     >
       {children}
     </Tag>

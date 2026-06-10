@@ -1,5 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import { Reveal } from "./Reveal";
+import { AnimatedValue } from "./AnimatedValue";
 
 const stats = [
   { value: "15.000€", label: "Inversión inicial por máquina" },
@@ -71,9 +72,10 @@ export function Inversores() {
           <div className="mt-16 grid gap-px sm:grid-cols-3 rounded-2xl overflow-hidden border border-paper/10 bg-paper/10">
             {stats.map((s) => (
               <div key={s.label} className="bg-ink p-8">
-                <span className="block text-signal text-[clamp(36px,5vw,56px)] font-mono font-semibold leading-none tracking-[-0.02em]">
-                  {s.value}
-                </span>
+                <AnimatedValue
+                  value={s.value}
+                  className="block text-signal text-[clamp(36px,5vw,56px)] font-mono font-semibold leading-none tracking-[-0.02em]"
+                />
                 <span className="mt-4 block text-paper/65 text-sm leading-relaxed">
                   {s.label}
                 </span>
@@ -86,7 +88,7 @@ export function Inversores() {
           <div className="mt-12">
             <a
               href="#contacto"
-              className="group inline-flex items-center gap-2 border border-paper/30 text-paper font-mono text-[12.5px] tracking-[0.08em] uppercase px-6 py-3.5 rounded-full hover:bg-paper hover:text-ink transition-colors"
+              className="group inline-flex items-center gap-2 border border-paper/30 text-paper font-mono text-[12.5px] tracking-[0.08em] uppercase px-6 py-3.5 rounded-full hover:bg-paper hover:text-ink hover:scale-[1.02] active:scale-[0.99] transition-[background-color,color,transform] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
             >
               Hablar con el equipo
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

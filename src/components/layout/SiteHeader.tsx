@@ -26,9 +26,9 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 w-full transition-colors",
+        "sticky top-0 z-40 w-full transition-[background-color,box-shadow,border-color] duration-300",
         scrolled
-          ? "bg-paper/85 backdrop-blur-md border-b border-line"
+          ? "bg-paper/80 backdrop-blur-md border-b border-line shadow-[0_8px_30px_-18px_hsl(var(--ink)/0.25)]"
           : "bg-transparent",
       )}
     >
@@ -58,7 +58,7 @@ export function SiteHeader() {
           </Link>
           <a
             href="#contacto"
-            className="font-mono text-[12px] tracking-[0.08em] uppercase text-paper bg-ink px-4 py-2.5 rounded-full hover:bg-ink-2 transition-colors"
+            className="font-mono text-[12px] tracking-[0.08em] uppercase text-paper bg-ink px-4 py-2.5 rounded-full hover:bg-ink-2 hover:scale-[1.03] active:scale-[0.99] transition-[background-color,transform] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal-blue focus-visible:ring-offset-2"
           >
             Solicitar instalación →
           </a>

@@ -102,7 +102,7 @@ export function Contacto() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="group mt-2 inline-flex items-center justify-center gap-2 bg-signal text-paper font-mono text-[12.5px] tracking-[0.08em] uppercase px-6 py-3.5 rounded-full hover:opacity-95 disabled:opacity-60 transition-opacity shadow-[0_8px_30px_-8px_hsl(var(--signal-blue)/0.55)]"
+                className="group mt-2 inline-flex items-center justify-center gap-2 bg-signal text-paper font-mono text-[12.5px] tracking-[0.08em] uppercase px-6 py-3.5 rounded-full disabled:opacity-60 transition-[transform,box-shadow,opacity] duration-300 shadow-[0_8px_30px_-8px_hsl(var(--signal-blue)/0.55)] hover:scale-[1.02] hover:shadow-[0_14px_44px_-10px_hsl(var(--signal-blue)/0.75)] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal-blue focus-visible:ring-offset-2"
               >
                 {submitting ? "Enviando…" : "Enviar solicitud"}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
