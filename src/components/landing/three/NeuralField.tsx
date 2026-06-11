@@ -11,12 +11,19 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 // Paleta de marca (hex de los tokens HSL de index.css)
 const PALETTE = ["#1A8CFF", "#22C9E6", "#46E4CF", "#16D399"];
 
-const COUNT = 110;
-const FIELD_W = 22; // ancho del volumen (unidades de escena)
+// Configuración por dispositivo: en móvil menos nodos y campo más estrecho
+// (el frustum visible en portrait es mucho más angosto)
+type FieldConfig = {
+  count: number;
+  fieldW: number;
+  maxLinks: number;
+};
+const DESKTOP: FieldConfig = { count: 110, fieldW: 22, maxLinks: 320 };
+const MOBILE: FieldConfig = { count: 60, fieldW: 9, maxLinks: 140 };
+
 const FIELD_H = 10;
 const FIELD_D = 5;
 const LINK_DIST = 3.2; // distancia máxima para conectar dos nodos
-const MAX_LINKS = 320;
 
 // Sprite radial para puntos redondos con glow (sin texturas externas)
 function makeDotTexture() {
@@ -42,7 +49,14 @@ type Node = {
   amp: number;
 };
 
-function Field({ pointer }: { pointer: React.MutableRefObject<{ x: number; y: number }> }) {
+function Field({
+  pointer,
+  config,
+}: {
+  pointer: React.MutableRefObject<{ x: number; y: number }>;
+  config: FieldConfig;
+}) {
+  const { count: COUNT, fieldW: FIELD_W, maxLinks: MAX_LINKS } = config;
   const pointsRef = useRef<THREE.Points>(null);
   const linesRef = useRef<THREE.LineSegments>(null);
   const groupRef = useRef<THREE.Group>(null);
@@ -93,11 +107,11 @@ function Field({ pointer }: { pointer: React.MutableRefObject<{ x: number; y: nu
     }
 
     return { nodes, links, pointPositions, pointColors, linkPositions, linkColors };
-  }, []);
+  }, [COUNT, FIELD_W, MAX_LINKS]);
 
   const current = useMemo(
     () => Array.from({ length: COUNT }, () => new THREE.Vector3()),
-    [],
+    [COUNT],
   );
 
   useFrame(({ clock }) => {
@@ -194,6 +208,12 @@ export default function NeuralField() {
   const pointer = useRef({ x: 0, y: 0 });
   const wrapRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
+  // Variante ligera en pantallas estrechas (fijada al montar; el remount
+  // en cambios de breakpoint no compensa el coste de reconstruir la escena)
+  const [config] = useState<FieldConfig>(() =>
+    window.innerWidth < 768 ? MOBILE : DESKTOP,
+  );
+  const isMobileConfig = config === MOBILE;
 
   // El canvas es pointer-events:none — escuchamos el cursor en window
   useEffect(() => {
@@ -220,13 +240,13 @@ export default function NeuralField() {
   return (
     <div ref={wrapRef} className="absolute inset-0 pointer-events-none" aria-hidden>
       <Canvas
-        dpr={[1, 2]}
+        dpr={isMobileConfig ? [1, 1.5] : [1, 2]}
         frameloop={visible ? "always" : "never"}
         gl={{ alpha: true, antialias: false, powerPreference: "high-performance" }}
         camera={{ fov: 50, position: [0, 0, 9], near: 0.1, far: 40 }}
         style={{ background: "transparent" }}
       >
-        <Field pointer={pointer} />
+        <Field pointer={pointer} config={config} />
       </Canvas>
     </div>
   );

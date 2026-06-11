@@ -1,15 +1,13 @@
 import { Suspense, lazy, useEffect, useState } from "react";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 const NeuralField = lazy(() => import("./three/NeuralField"));
 
 /**
- * Fondo 3D del hero con carga diferida. En móvil, con prefers-reduced-motion
- * o sin WebGL no se monta nada: la aura de gradiente del hero queda como
- * fallback estático.
+ * Fondo 3D del hero con carga diferida. En móvil se monta una variante
+ * ligera (menos nodos, DPR 1.5). Con prefers-reduced-motion o sin WebGL
+ * no se monta nada: la aura de gradiente del hero queda como fallback.
  */
 export function HeroBackground() {
-  const isMobile = useIsMobile();
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
@@ -22,7 +20,7 @@ export function HeroBackground() {
     if (gl) setEnabled(true);
   }, []);
 
-  if (isMobile || !enabled) return null;
+  if (!enabled) return null;
 
   return (
     <Suspense fallback={null}>
