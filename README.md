@@ -1,57 +1,59 @@
+*[Versión en español](README.es.md)*
+
 # VendAI Lab
 
-Plataforma de gestión de máquinas vending: landing comercial + panel interno
-para operar la flota, el CRM de clientes y las finanzas del negocio.
+Vending-machine management platform: commercial landing page + internal panel
+to operate the fleet, customer CRM, and business finances.
 
-**Producción:** https://vend-ai-lab.vercel.app
-
----
-
-## Qué es
-
-VendAI Lab tiene dos capas claramente separadas:
-
-- **Landing pública** — presentación del modelo de negocio, orientada a
-  clientes potenciales e inversores: cómo funciona, para quién es, servicios,
-  y sección de métricas para inversores.
-- **Panel interno (`/app`)** — la operación real: gestión de máquinas
-  vending, ubicaciones, CRM y finanzas, protegido con autenticación.
-
-## Qué hace
-
-### Landing
-- **Hero 3D** — `NeuralField`: campo de nodos y conexiones en colores de
-  marca, con parallax y atracción sutil al cursor; en móvil se monta una
-  variante ligera (60 nodos vs 110, DPR limitado a [1, 1.5])
-- **Cómo funciona / Para quién / Modelo / Servicios** — secciones
-  explicativas del negocio
-- **Inversores** — métricas con contador animado (`AnimatedValue`, respeta
-  `prefers-reduced-motion`)
-- **Contacto**
-
-### Panel interno (`/app`)
-- **Dashboard** — resumen operativo (`useDashboardData.ts`)
-- **Máquinas** — inventario de máquinas vending, con submódulos:
-  - `useMachines.ts` — listado y estado de máquinas
-  - `useMachineProducts.ts` — productos cargados por máquina
-  - `useMachineSales.ts` — ventas por máquina
-  - `useMachineServices.ts` — servicios/mantenimiento
-- **Ubicaciones** — gestión de los puntos donde están instaladas las máquinas
-- **Finanzas** — vista financiera del negocio
-- **CRM** — gestión de clientes (`components/app/crm/`)
-- **Configuración** — ajustes del panel (`components/app/settings/`)
-- **Auth** — login con Supabase Auth (`useAuth.tsx`)
+**Production:** https://vend-ai-lab.vercel.app
 
 ---
 
-## Arquitectura
+## What it is
 
-### Estructura de carpetas
+VendAI Lab has two clearly separated layers:
+
+- **Public landing page** — presents the business model to potential
+  customers and investors: how it works, who it's for, services, and an
+  investor metrics section.
+- **Internal panel (`/app`)** — the real operation: vending-machine
+  management, locations, CRM, and finances, protected by authentication.
+
+## What it does
+
+### Landing page
+- **3D Hero** — `NeuralField`: a field of nodes and connections in brand
+  colors, with parallax and subtle cursor attraction; a lighter variant
+  mounts on mobile (60 nodes vs. 110, DPR capped at [1, 1.5])
+- **How it works / Who it's for / Model / Services** — sections explaining
+  the business
+- **Investors** — metrics with an animated counter (`AnimatedValue`,
+  respects `prefers-reduced-motion`)
+- **Contact**
+
+### Internal panel (`/app`)
+- **Dashboard** — operational overview (`useDashboardData.ts`)
+- **Machines** — vending-machine inventory, with submodules:
+  - `useMachines.ts` — machine listing and status
+  - `useMachineProducts.ts` — products loaded per machine
+  - `useMachineSales.ts` — sales per machine
+  - `useMachineServices.ts` — services/maintenance
+- **Locations** — management of the sites where machines are installed
+- **Finance** — financial view of the business
+- **CRM** — customer management (`components/app/crm/`)
+- **Settings** — panel configuration (`components/app/settings/`)
+- **Auth** — login with Supabase Auth (`useAuth.tsx`)
+
+---
+
+## Architecture
+
+### Folder structure
 
 ```
 src/
 ├── pages/
-│   ├── Index.tsx           # Landing pública
+│   ├── Index.tsx           # Public landing page
 │   ├── Login.tsx
 │   ├── _Placeholder.tsx
 │   └── app/
@@ -62,12 +64,12 @@ src/
 │       └── Configuracion.tsx
 ├── components/
 │   ├── landing/
-│   │   ├── Hero.tsx / HeroBackground.tsx   # Hero 3D (NeuralField)
+│   │   ├── Hero.tsx / HeroBackground.tsx   # 3D Hero (NeuralField)
 │   │   ├── ComoFunciona.tsx / ParaQuien.tsx / Modelo.tsx / Servicios.tsx
 │   │   ├── Inversores.tsx / AnimatedValue.tsx
 │   │   ├── Contacto.tsx
 │   │   ├── Reveal.tsx / SectionHeader.tsx
-│   │   └── three/                            # Escena 3D del hero
+│   │   └── three/                            # Hero 3D scene
 │   ├── app/
 │   │   ├── crm/
 │   │   ├── machines/
@@ -88,17 +90,17 @@ src/
 └── integrations/supabase/
 
 supabase/
-└── migrations/                                 # 9 migraciones (29 mayo 2026)
+└── migrations/                                 # 9 migrations (May 29, 2026)
 ```
 
 ---
 
-## Stack técnico
+## Tech stack
 
 ```
 Frontend    React + TypeScript + Vite
 3D          Three.js + @react-three/fiber + drei
-Animación   Framer Motion
+Animation   Framer Motion
 Backend/DB  Supabase (Postgres, Auth)
 Deploy      Vercel
 UI          shadcn/ui + Tailwind CSS
@@ -106,13 +108,13 @@ UI          shadcn/ui + Tailwind CSS
 
 ---
 
-## Desarrollo local
+## Local development
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Licencia
+## License
 
-Privado.
+Private.
