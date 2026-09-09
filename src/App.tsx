@@ -14,6 +14,17 @@ import SiteLayout from "@/components/layout/SiteLayout";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
+// Páginas legales con carga diferida (rara vez visitadas).
+const Privacidad = lazy(() =>
+  import("./pages/legal/LegalPages").then((m) => ({ default: m.Privacidad })),
+);
+const AvisoLegal = lazy(() =>
+  import("./pages/legal/LegalPages").then((m) => ({ default: m.AvisoLegal })),
+);
+const Cookies = lazy(() =>
+  import("./pages/legal/LegalPages").then((m) => ({ default: m.Cookies })),
+);
+
 // Backoffice con carga diferida: la landing no paga su peso (recharts, xlsx…)
 const AppLayout = lazy(() => import("@/components/layout/AppLayout"));
 const Login = lazy(() => import("./pages/Login"));
@@ -45,9 +56,12 @@ const App = () => (
           <ThemeSync />
           <Suspense fallback={<RouteFallback />}>
             <Routes>
-              {/* Landing single-page */}
+              {/* Landing single-page + páginas legales */}
               <Route element={<SiteLayout />}>
                 <Route path="/" element={<Index />} />
+                <Route path="/privacidad" element={<Privacidad />} />
+                <Route path="/aviso-legal" element={<AvisoLegal />} />
+                <Route path="/cookies" element={<Cookies />} />
               </Route>
 
               {/* Auth */}
