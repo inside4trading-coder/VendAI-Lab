@@ -1,6 +1,7 @@
 import { useState, FormEvent } from "react";
 import { Mail, MapPin, MessageCircle, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { SectionHeader } from "./SectionHeader";
 import { Reveal } from "./Reveal";
 
@@ -9,25 +10,57 @@ const venueTypes = [
   "Hotel",
   "Oficina",
   "Centro deportivo",
+  "Universidad",
+  "Local a pie de calle",
   "Otro",
 ];
+
+const CONTACT_EMAIL = "hola@vendai.es";
+const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER as string | undefined;
 
 export function Contacto() {
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
-      (e.target as HTMLFormElement).reset();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+
+    // Honeypot: si un bot rellena el campo oculto, fingimos éxito y no guardamos.
+    if (data.get("company")) {
+      form.reset();
       toast({
         title: "Solicitud recibida",
-        description:
-          "Te contactaremos en menos de 24 h para coordinar una visita.",
+        description: "Te contactaremos en menos de 24 h para coordinar una visita.",
       });
-    }, 700);
+      return;
+    }
+
+    setSubmitting(true);
+    const { error } = await supabase.from("contact_requests").insert({
+      name: String(data.get("name") ?? "").trim(),
+      email: String(data.get("email") ?? "").trim().toLowerCase(),
+      phone: String(data.get("phone") ?? "").trim() || null,
+      venue: String(data.get("venue") ?? "").trim() || null,
+      message: String(data.get("message") ?? "").trim() || null,
+    });
+    setSubmitting(false);
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "No se pudo enviar la solicitud",
+        description: `Inténtalo de nuevo en unos minutos o escríbenos a ${CONTACT_EMAIL}.`,
+      });
+      return;
+    }
+
+    form.reset();
+    toast({
+      title: "Solicitud recibida",
+      description: "Te contactaremos en menos de 24 h para coordinar una visita.",
+    });
   }
 
   return (
@@ -55,6 +88,7 @@ export function Contacto() {
                     id="name"
                     name="name"
                     required
+                    maxLength={200}
                     autoComplete="name"
                     className="form-input"
                     placeholder="Tu nombre"
@@ -66,6 +100,7 @@ export function Contacto() {
                     name="email"
                     type="email"
                     required
+                    maxLength={320}
                     autoComplete="email"
                     className="form-input"
                     placeholder="tu@empresa.com"
@@ -79,6 +114,7 @@ export function Contacto() {
                     id="phone"
                     name="phone"
                     type="tel"
+                    maxLength={40}
                     autoComplete="tel"
                     className="form-input"
                     placeholder="+34 600 000 000"
@@ -101,10 +137,37 @@ export function Contacto() {
                   id="message"
                   name="message"
                   rows={4}
+                  maxLength={4000}
                   className="form-input resize-none"
                   placeholder="Cuéntanos sobre el espacio, tráfico, horarios…"
                 />
               </Field>
+
+              {/* Honeypot anti-spam: oculto para personas, tentador para bots. */}
+              <input
+                type="text"
+                name="company"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="hidden"
+              />
+
+              <label className="flex items-start gap-3 text-[13px] leading-relaxed text-muted-foreground">
+                <input
+                  type="checkbox"
+                  name="consent"
+                  required
+                  className="mt-1 h-4 w-4 flex-none accent-signal-blue"
+                />
+                <span>
+                  He leído y acepto la{" "}
+                  <a href="/privacidad" className="underline underline-offset-2 hover:text-ink">
+                    política de privacidad
+                  </a>
+                  . Usamos tus datos solo para responder a esta solicitud.
+                </span>
+              </label>
 
               <button
                 type="submit"
@@ -137,7 +200,7 @@ export function Contacto() {
               </div>
 
               <a
-                href="mailto:hola@vendai.lab"
+                href={`mailto:${CONTACT_EMAIL}`}
                 className="group rounded-2xl border border-line bg-paper p-7 hover:border-ink/30 transition-colors"
               >
                 <span className="eyebrow">Email</span>
@@ -147,29 +210,31 @@ export function Contacto() {
                     strokeWidth={1.7}
                   />
                   <span className="font-mono text-[15.5px] text-ink group-hover:underline underline-offset-4">
-                    hola@vendai.lab
+                    {CONTACT_EMAIL}
                   </span>
                 </div>
               </a>
 
-              <div className="rounded-2xl border border-line p-7 bg-[#0E1116] text-paper">
-                <span className="font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-crypto-green">
-                  WhatsApp
-                </span>
-                <p className="mt-4 text-[15.5px] leading-relaxed text-paper/80">
-                  También puedes escribirnos por WhatsApp y te respondemos en
-                  minutos.
-                </p>
-                <a
-                  href="https://wa.me/34600000000"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="mt-5 inline-flex items-center justify-center gap-2 bg-crypto-green text-ink font-mono text-[12.5px] tracking-[0.08em] uppercase px-5 py-3 rounded-full hover:opacity-95 transition-opacity"
-                >
-                  <MessageCircle className="h-4 w-4" strokeWidth={2} />
-                  Abrir WhatsApp
-                </a>
-              </div>
+              {WHATSAPP_NUMBER && (
+                <div className="rounded-2xl border border-line p-7 bg-[#0E1116] text-paper">
+                  <span className="font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-crypto-green">
+                    WhatsApp
+                  </span>
+                  <p className="mt-4 text-[15.5px] leading-relaxed text-paper/80">
+                    También puedes escribirnos por WhatsApp y te respondemos en
+                    minutos.
+                  </p>
+                  <a
+                    href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="mt-5 inline-flex items-center justify-center gap-2 bg-crypto-green text-ink font-mono text-[12.5px] tracking-[0.08em] uppercase px-5 py-3 rounded-full hover:opacity-95 transition-opacity"
+                  >
+                    <MessageCircle className="h-4 w-4" strokeWidth={2} />
+                    Abrir WhatsApp
+                  </a>
+                </div>
+              )}
             </div>
           </Reveal>
         </div>

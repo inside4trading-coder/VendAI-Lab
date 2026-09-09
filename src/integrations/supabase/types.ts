@@ -77,6 +77,45 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_requests: {
+        Row: {
+          created_at: string
+          email: string
+          handled: boolean
+          id: string
+          message: string | null
+          name: string
+          phone: string | null
+          source: string
+          status: string
+          venue: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          handled?: boolean
+          id?: string
+          message?: string | null
+          name: string
+          phone?: string | null
+          source?: string
+          status?: string
+          venue?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          handled?: boolean
+          id?: string
+          message?: string | null
+          name?: string
+          phone?: string | null
+          source?: string
+          status?: string
+          venue?: string | null
+        }
+        Relationships: []
+      }
       lead_activities: {
         Row: {
           body: string | null
