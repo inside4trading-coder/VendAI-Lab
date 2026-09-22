@@ -15,7 +15,6 @@ const cols = [
     title: "Empresa",
     links: [
       { label: "Lab", href: "/" },
-      { label: "Inversores", href: "#inversores" },
       { label: "Contacto", href: "#contacto" },
     ],
   },
@@ -37,8 +36,8 @@ export function SiteFooter() {
           <div>
             <Logo size={30} tone="white" />
             <p className="mt-6 text-sm text-paper/65 max-w-xs leading-relaxed">
-              Laboratorio de proyectos AI-Native, Crypto y negocios físicos.
-              Construye, prueba y despliega máquinas autónomas.
+              Instalamos y operamos vending inteligente en Madrid. Sin coste
+              para tu local.
             </p>
           </div>
           {cols.map((col) => (

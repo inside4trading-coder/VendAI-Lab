@@ -1,27 +1,27 @@
-import { Dumbbell, Hotel, Building2, Trophy } from "lucide-react";
+import { GraduationCap, Store, Building2, Trophy } from "lucide-react";
 import { SectionHeader } from "./SectionHeader";
 import { Reveal } from "./Reveal";
 
 const venues = [
   {
-    icon: Dumbbell,
-    title: "Gimnasios",
-    body: "Después del entreno, tus socios quieren hidratarse y comer. Máquinas en vestuarios o recepción.",
-  },
-  {
-    icon: Hotel,
-    title: "Hoteles",
-    body: "Ofrece snacks y bebidas 24/7 a tus huéspedes sin contratar personal adicional.",
-  },
-  {
-    icon: Building2,
-    title: "Oficinas",
-    body: "Un punto de avituallamiento para tus equipos sin gestionarlo tú. Beneficio corporativo a coste cero.",
+    icon: GraduationCap,
+    title: "Universidades",
+    body: "Alto tráfico de estudiantes todo el día, en un entorno cerrado y con horarios extendidos.",
   },
   {
     icon: Trophy,
     title: "Centros deportivos",
     body: "Pistas de pádel, piscinas, polideportivos: alto tráfico y demanda constante.",
+  },
+  {
+    icon: Store,
+    title: "Locales a pie de calle",
+    body: "Comercios con tráfico peatonal constante y horario amplio, ideales para vending autónomo.",
+  },
+  {
+    icon: Building2,
+    title: "Oficinas",
+    body: "Un punto de avituallamiento para tus equipos sin gestionarlo tú. Beneficio corporativo a coste cero.",
   },
 ];
 

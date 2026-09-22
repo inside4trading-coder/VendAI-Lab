@@ -68,7 +68,7 @@ export function Contacto() {
       <div className="container py-24 md:py-32">
         <Reveal>
           <SectionHeader
-            num="06"
+            num="05"
             eyebrow="Contacto"
             title="Hablemos de tu espacio."
             description="Cuéntanos sobre tu local y te respondemos en menos de 24 horas con una propuesta inicial."

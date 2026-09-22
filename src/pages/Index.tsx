@@ -3,7 +3,6 @@ import { Servicios } from "@/components/landing/Servicios";
 import { ComoFunciona } from "@/components/landing/ComoFunciona";
 import { ParaQuien } from "@/components/landing/ParaQuien";
 import { Modelo } from "@/components/landing/Modelo";
-import { Inversores } from "@/components/landing/Inversores";
 import { Contacto } from "@/components/landing/Contacto";
 
 export default function Index() {
@@ -14,7 +13,6 @@ export default function Index() {
       <ComoFunciona />
       <ParaQuien />
       <Modelo />
-      <Inversores />
       <Contacto />
     </>
   );

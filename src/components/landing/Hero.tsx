@@ -50,12 +50,6 @@ export function Hero() {
                 Solicitar instalación gratuita
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </a>
-              <a
-                href="#inversores"
-                className="inline-flex items-center justify-center gap-2 border border-ink/15 text-ink font-mono text-[12.5px] tracking-[0.08em] uppercase px-6 py-3.5 rounded-full hover:border-ink/40 hover:bg-ink/[0.03] hover:scale-[1.02] active:scale-[0.99] transition-[border-color,background-color,transform] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal-blue focus-visible:ring-offset-2"
-              >
-                Soy inversor
-              </a>
             </div>
           </div>
 
@@ -84,7 +78,7 @@ export function Hero() {
         <div className="mt-20 md:mt-24 pt-7 border-t border-line">
           <ul className="flex flex-wrap items-center gap-x-8 gap-y-3 font-mono text-[11.5px] tracking-[0.14em] uppercase text-muted-foreground">
             {[
-              "Operando en Madrid",
+              "Lanzando en Madrid",
               "Tecnología cashless",
               "Telemetría en tiempo real",
               "Sin coste para el local",
