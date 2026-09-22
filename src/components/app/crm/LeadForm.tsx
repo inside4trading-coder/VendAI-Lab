@@ -6,8 +6,9 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { LEAD_CATEGORIES, LEAD_STATUSES, type Lead } from "@/lib/crm";
+import { LEAD_CATEGORIES, LEAD_STATUSES, type Lead, teamMemberLabel } from "@/lib/crm";
 import { useCreateLead, useUpdateLead, type NewLead } from "@/hooks/crm/useLeads";
+import { useTeamMembers } from "@/hooks/crm/useTeamMembers";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
@@ -27,6 +28,8 @@ const empty: NewLead = {
   rating: null,
   status: "Nuevo",
   owner_name: null,
+  assigned_to: null,
+  tags: [],
   next_action_at: null,
   next_action_note: null,
   notes: null,
@@ -36,16 +39,20 @@ const empty: NewLead = {
 
 export function LeadForm({ open, onOpenChange, lead }: Props) {
   const [form, setForm] = useState<NewLead>(empty);
+  const [tagsInput, setTagsInput] = useState("");
   const create = useCreateLead();
   const update = useUpdateLead();
+  const { data: teamMembers = [] } = useTeamMembers();
   const { toast } = useToast();
 
   useEffect(() => {
     if (lead) {
       const { id: _id, user_id: _u, created_at: _c, updated_at: _up, ...rest } = lead;
       setForm(rest as NewLead);
+      setTagsInput((lead.tags ?? []).join(", "));
     } else {
       setForm(empty);
+      setTagsInput("");
     }
   }, [lead, open]);
 
@@ -54,12 +61,17 @@ export function LeadForm({ open, onOpenChange, lead }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const tags = tagsInput
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+    const payload: NewLead = { ...form, tags };
     try {
       if (lead) {
-        await update.mutateAsync({ id: lead.id, patch: form });
+        await update.mutateAsync({ id: lead.id, patch: payload });
         toast({ title: "Lead actualizado" });
       } else {
-        await create.mutateAsync(form);
+        await create.mutateAsync(payload);
         toast({ title: "Lead creado" });
       }
       onOpenChange(false);
@@ -181,13 +193,31 @@ export function LeadForm({ open, onOpenChange, lead }: Props) {
                 className="form-input"
               />
             </label>
-            <label className="block sm:col-span-2">
+            <label className="block">
               <span className="block font-mono text-[10.5px] tracking-[0.14em] uppercase text-muted-foreground mb-1.5">
-                Responsable
+                Asignado a
+              </span>
+              <select
+                value={form.assigned_to ?? ""}
+                onChange={(e) => set("assigned_to", e.target.value || null)}
+                className="form-input"
+              >
+                <option value="">Sin asignar</option>
+                {teamMembers.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {teamMemberLabel(m)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block">
+              <span className="block font-mono text-[10.5px] tracking-[0.14em] uppercase text-muted-foreground mb-1.5">
+                Tags (separados por coma)
               </span>
               <input
-                value={form.owner_name ?? ""}
-                onChange={(e) => set("owner_name", e.target.value || null)}
+                value={tagsInput}
+                onChange={(e) => setTagsInput(e.target.value)}
+                placeholder="prioridad, revisitar…"
                 className="form-input"
               />
             </label>

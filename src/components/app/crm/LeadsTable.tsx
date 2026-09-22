@@ -1,14 +1,16 @@
 import { Phone, Star } from "lucide-react";
-import type { Lead } from "@/lib/crm";
+import type { Lead, TeamMember } from "@/lib/crm";
+import { teamMemberLabel } from "@/lib/crm";
 import { StatusBadge } from "./StatusBadge";
 import { DiscoveryProgress } from "./DiscoveryProgress";
 
 interface Props {
   leads: Lead[];
   onOpen: (lead: Lead) => void;
+  teamMembers?: TeamMember[];
 }
 
-export function LeadsTable({ leads, onOpen }: Props) {
+export function LeadsTable({ leads, onOpen, teamMembers = [] }: Props) {
   return (
     <div className="bg-paper border border-line rounded-xl overflow-hidden">
       <div className="overflow-x-auto">
@@ -24,7 +26,7 @@ export function LeadsTable({ leads, onOpen }: Props) {
                 "Estado",
                 "Discovery",
                 "Próx. acción",
-                "Resp.",
+                "Asignado",
               ].map((h) => (
                 <th
                   key={h}
@@ -92,7 +94,13 @@ export function LeadsTable({ leads, onOpen }: Props) {
                     {next ?? <span className="text-faint">—</span>}
                   </td>
                   <td className="px-4 py-3.5 text-muted-foreground">
-                    {l.owner_name ?? "—"}
+                    {(() => {
+                      const member = l.assigned_to
+                        ? teamMembers.find((m) => m.id === l.assigned_to)
+                        : null;
+                      const label = member ? teamMemberLabel(member) : l.owner_name;
+                      return label ?? "—";
+                    })()}
                   </td>
                 </tr>
               );
