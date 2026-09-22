@@ -9,7 +9,6 @@ const nav = [
   { href: "#como-funciona", label: "Cómo funciona" },
   { href: "#para-quien", label: "Para quién" },
   { href: "#modelo", label: "Modelo" },
-  { href: "#inversores", label: "Inversores" },
 ];
 
 export function SiteHeader() {
