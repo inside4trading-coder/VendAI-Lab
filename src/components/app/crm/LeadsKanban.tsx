@@ -47,9 +47,9 @@ export function LeadsKanban({ leads, onOpen }: Props) {
               }}
               onDragLeave={() => setDragOver((s) => (s === status ? null : s))}
               onDrop={(e) => handleDrop(status, e)}
-              className={`w-[280px] lg:w-auto flex-none lg:flex-1 min-w-0 bg-panel border border-line border-t-[3px] ${st.col} rounded-xl flex flex-col max-h-[calc(100vh-220px)] transition-colors ${isOver ? "bg-line/40" : ""}`}
+              className={`w-[280px] lg:w-auto flex-none lg:flex-1 min-w-0 bg-panel border border-line border-t-[3px] ${st.col} rounded-xl flex flex-col transition-colors ${isOver ? "bg-line/40" : ""}`}
             >
-              <header className="px-4 py-3 flex items-center justify-between border-b border-line/70 sticky top-0">
+              <header className="px-4 py-3 flex items-center justify-between border-b border-line/70">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className={`h-1.5 w-1.5 rounded-full ${st.dot} flex-none`} />
                   <span className="font-mono text-[11px] tracking-[0.1em] uppercase text-ink truncate">
@@ -63,7 +63,7 @@ export function LeadsKanban({ leads, onOpen }: Props) {
                   {items.length}
                 </span>
               </header>
-              <div className="flex-1 overflow-y-auto p-3 space-y-3">
+              <div className="p-3 space-y-3">
                 {items.map((lead) => (
                   <LeadCard
                     key={lead.id}
