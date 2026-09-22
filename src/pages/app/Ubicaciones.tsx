@@ -174,7 +174,7 @@ export default function Ubicaciones() {
         <MetricCard label="Contactados" value={counts.contactado} dotClass="bg-signal-blue" />
         <MetricCard label="Reuniones" value={counts.reunion} dotClass="bg-ventures-violet" />
         <MetricCard label="Ganados" value={counts.ganado} dotClass="bg-crypto-green" />
-        <MetricCard label="Discovery" value={`${counts.discoveryPct}%`} dotClass="bg-cyan" />
+        <MetricCard label="Discovery" value={`${counts.discoveryPct}%`} dotClass="bg-muted-ink" />
       </div>
 
       {/* Controls (solo en vista Tabla) */}
