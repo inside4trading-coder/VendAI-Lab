@@ -1,14 +1,17 @@
 import { Phone, Star, Calendar, Mail, MapPin } from "lucide-react";
 import type { Lead } from "@/lib/crm";
 import { DiscoveryProgress } from "./DiscoveryProgress";
+import { StatusBadge } from "./StatusBadge";
 
 interface Props {
   lead: Lead;
   onOpen: () => void;
+  dragging?: boolean;
   onDragStart: () => void;
+  onDragEnd?: () => void;
 }
 
-export function LeadCard({ lead, onOpen, onDragStart }: Props) {
+export function LeadCard({ lead, onOpen, dragging, onDragStart, onDragEnd }: Props) {
   const next = lead.next_action_at
     ? new Intl.DateTimeFormat("es-ES", { day: "2-digit", month: "short" }).format(
         new Date(lead.next_action_at),
@@ -23,8 +26,9 @@ export function LeadCard({ lead, onOpen, onDragStart }: Props) {
         e.dataTransfer.setData("text/plain", lead.id);
         onDragStart();
       }}
+      onDragEnd={onDragEnd}
       onClick={onOpen}
-      className="group bg-paper border border-line rounded-lg p-4 cursor-pointer hover:border-ink/30 hover:shadow-[0_6px_20px_-12px_rgba(14,17,22,0.18)] transition-all active:cursor-grabbing"
+      className={`group bg-paper border border-line rounded-xl p-4 cursor-pointer hover:border-ink/30 hover:shadow-[0_6px_20px_-12px_rgba(14,17,22,0.18)] transition-all active:cursor-grabbing ${dragging ? "opacity-50 scale-[0.98]" : ""}`}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
@@ -41,19 +45,19 @@ export function LeadCard({ lead, onOpen, onDragStart }: Props) {
         )}
       </div>
 
-      <div className="mt-2">
+      <div className="mt-3 flex items-center gap-2 flex-wrap">
+        <StatusBadge status={lead.status} size="sm" />
         <DiscoveryProgress discovery={lead.discovery} variant="pill" />
       </div>
 
-      {lead.address && (
-        <p className="mt-3 text-[12.5px] text-muted-foreground flex items-start gap-1.5">
-          <MapPin className="h-3.5 w-3.5 flex-none mt-0.5" />
-          <span>{lead.address}</span>
-        </p>
-      )}
-
-      {(lead.phone || lead.email) && (
-        <div className="mt-2 space-y-1">
+      {(lead.address || lead.phone || lead.email) && (
+        <div className="mt-3 pt-3 border-t border-line space-y-2">
+          {lead.address && (
+            <p className="text-[12.5px] text-muted-foreground flex items-start gap-1.5">
+              <MapPin className="h-3.5 w-3.5 flex-none mt-0.5" />
+              <span>{lead.address}</span>
+            </p>
+          )}
           {lead.phone && (
             <a
               href={`tel:${lead.phone.replace(/\s/g, "")}`}
