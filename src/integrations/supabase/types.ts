@@ -184,6 +184,7 @@ export type Database = {
       leads: {
         Row: {
           address: string | null
+          assigned_to: string | null
           category: string
           created_at: string
           discovery: Json
@@ -197,12 +198,14 @@ export type Database = {
           phone: string | null
           rating: number | null
           status: string
+          tags: string[]
           updated_at: string
           user_id: string
           website: string | null
         }
         Insert: {
           address?: string | null
+          assigned_to?: string | null
           category?: string
           created_at?: string
           discovery?: Json
@@ -216,12 +219,14 @@ export type Database = {
           phone?: string | null
           rating?: number | null
           status?: string
+          tags?: string[]
           updated_at?: string
           user_id: string
           website?: string | null
         }
         Update: {
           address?: string | null
+          assigned_to?: string | null
           category?: string
           created_at?: string
           discovery?: Json
@@ -235,6 +240,7 @@ export type Database = {
           phone?: string | null
           rating?: number | null
           status?: string
+          tags?: string[]
           updated_at?: string
           user_id?: string
           website?: string | null
@@ -574,6 +580,10 @@ export type Database = {
       lead_belongs_to_user: {
         Args: { _lead_id: string; _user_id: string }
         Returns: boolean
+      }
+      list_team_members: {
+        Args: Record<PropertyKey, never>
+        Returns: { id: string; email: string; full_name: string | null }[]
       }
       machine_belongs_to_user: {
         Args: { _machine_id: string; _user_id: string }

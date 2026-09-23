@@ -6,11 +6,12 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { type Lead, type LeadDiscovery, DISCOVERY_QUESTIONS } from "@/lib/crm";
+import { type Lead, type LeadDiscovery, DISCOVERY_QUESTIONS, teamMemberLabel } from "@/lib/crm";
 import { StatusSelect } from "./StatusSelect";
 import { DiscoveryProgress } from "./DiscoveryProgress";
 import { useUpdateLead, useDeleteLead } from "@/hooks/crm/useLeads";
 import { useLeadActivities, useCreateActivity } from "@/hooks/crm/useLeadActivities";
+import { useTeamMembers } from "@/hooks/crm/useTeamMembers";
 import {
   Phone,
   Mail,
@@ -72,6 +73,7 @@ export function LeadDrawer({ lead, open, onOpenChange, onEdit }: Props) {
   const del = useDeleteLead();
   const { data: activities = [] } = useLeadActivities(lead?.id ?? null);
   const createActivity = useCreateActivity();
+  const { data: teamMembers = [] } = useTeamMembers();
   const { toast } = useToast();
 
   const [notesDraft, setNotesDraft] = useState("");
@@ -81,6 +83,7 @@ export function LeadDrawer({ lead, open, onOpenChange, onEdit }: Props) {
   const [nextAt, setNextAt] = useState("");
   const [nextNote, setNextNote] = useState("");
   const [discoveryDraft, setDiscoveryDraft] = useState<LeadDiscovery>({});
+  const [tagsDraft, setTagsDraft] = useState("");
 
   useEffect(() => {
     if (!lead) return;
@@ -88,6 +91,7 @@ export function LeadDrawer({ lead, open, onOpenChange, onEdit }: Props) {
     setNextAt(lead.next_action_at ? lead.next_action_at.slice(0, 16) : "");
     setNextNote(lead.next_action_note ?? "");
     setDiscoveryDraft(lead.discovery ?? {});
+    setTagsDraft((lead.tags ?? []).join(", "));
   }, [lead]);
 
   if (!lead) return null;
@@ -102,6 +106,16 @@ export function LeadDrawer({ lead, open, onOpenChange, onEdit }: Props) {
       title: `Estado cambiado a "${status}"`,
       body: `Antes: ${prev}`,
     });
+  };
+
+  const handleAssign = async (assignedTo: string) => {
+    await update.mutateAsync({ id: lead.id, patch: { assigned_to: assignedTo || null } });
+  };
+
+  const saveTags = async () => {
+    const tags = tagsDraft.split(",").map((t) => t.trim()).filter(Boolean);
+    if (JSON.stringify(tags) === JSON.stringify(lead.tags ?? [])) return;
+    await update.mutateAsync({ id: lead.id, patch: { tags } });
   };
 
   const saveNotes = async () => {
@@ -157,9 +171,9 @@ export function LeadDrawer({ lead, open, onOpenChange, onEdit }: Props) {
               <SheetTitle className="mt-2 text-[20px] font-mono leading-tight">
                 {lead.name}
               </SheetTitle>
-              {lead.owner_name && (
+              {!lead.assigned_to && lead.owner_name && (
                 <p className="mt-1 font-mono text-[11px] tracking-[0.04em] text-muted-foreground">
-                  Responsable: {lead.owner_name}
+                  Responsable (sin cuenta): {lead.owner_name}
                 </p>
               )}
             </div>
@@ -189,6 +203,20 @@ export function LeadDrawer({ lead, open, onOpenChange, onEdit }: Props) {
                 {Number(lead.rating).toFixed(1)}
               </span>
             )}
+          </div>
+          <div className="mt-3">
+            <select
+              value={lead.assigned_to ?? ""}
+              onChange={(e) => handleAssign(e.target.value)}
+              className="form-input w-full sm:w-auto text-[13px]"
+            >
+              <option value="">Sin asignar</option>
+              {teamMembers.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {teamMemberLabel(m)}
+                </option>
+              ))}
+            </select>
           </div>
           {lead.status === "Ganado" && (
             <Link
@@ -238,6 +266,29 @@ export function LeadDrawer({ lead, open, onOpenChange, onEdit }: Props) {
               <Globe className="h-4 w-4 text-muted-foreground" />
               {lead.website}
             </a>
+          )}
+        </div>
+
+        {/* Tags */}
+        <div className="px-6 py-5 border-b border-line">
+          <span className="block font-mono text-[10.5px] tracking-[0.14em] uppercase text-muted-foreground mb-2">
+            Tags
+          </span>
+          <input
+            value={tagsDraft}
+            onChange={(e) => setTagsDraft(e.target.value)}
+            onBlur={saveTags}
+            placeholder="prioridad, revisitar… (separados por coma)"
+            className="form-input"
+          />
+          {lead.tags.length > 0 && (
+            <div className="mt-2.5 flex flex-wrap gap-1.5">
+              {lead.tags.map((t) => (
+                <span key={t} className="tag">
+                  {t}
+                </span>
+              ))}
+            </div>
           )}
         </div>
 

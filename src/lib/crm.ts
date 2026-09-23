@@ -70,6 +70,8 @@ export interface Lead {
   rating: number | null;
   status: string;
   owner_name: string | null;
+  assigned_to: string | null;
+  tags: string[];
   next_action_at: string | null;
   next_action_note: string | null;
   notes: string | null;
@@ -77,6 +79,38 @@ export interface Lead {
   created_at: string;
   updated_at: string;
 }
+
+export interface TeamMember {
+  id: string;
+  email: string;
+  full_name: string | null;
+}
+
+export function teamMemberLabel(m: Pick<TeamMember, "full_name" | "email">): string {
+  return m.full_name || m.email;
+}
+
+/** Semáforo de la próxima acción: vencida / próxima (≤2 días) / futura / sin fecha. */
+export type NextActionTone = "overdue" | "soon" | "future" | "none";
+
+export function getNextActionTone(dateStr: string | null | undefined): NextActionTone {
+  if (!dateStr) return "none";
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return "none";
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dayMs = 24 * 60 * 60 * 1000;
+  if (d.getTime() <= today.getTime() + dayMs - 1) return "overdue";
+  if (d.getTime() <= today.getTime() + 3 * dayMs) return "soon";
+  return "future";
+}
+
+export const nextActionToneStyles: Record<NextActionTone, string> = {
+  overdue: "bg-destructive/10 text-destructive border-destructive/30",
+  soon: "bg-amber-500/10 text-amber-600 border-amber-500/30",
+  future: "bg-crypto-green/10 text-crypto-green border-crypto-green/30",
+  none: "bg-panel text-ink-2 border-line",
+};
 
 
 export interface LeadActivity {
@@ -134,7 +168,7 @@ export const statusStyles: Record<
 
 export const SEED_LEADS: Omit<
   Lead,
-  "id" | "user_id" | "created_at" | "updated_at" | "email" | "website" | "next_action_at" | "next_action_note" | "notes" | "discovery"
+  "id" | "user_id" | "created_at" | "updated_at" | "email" | "website" | "next_action_at" | "next_action_note" | "notes" | "discovery" | "assigned_to" | "tags"
 >[] = [
   { name: "Infinito Gimnasio Femenino", category: "Gimnasios", address: "C. de las Pedroñeras, 1, Hortaleza, Madrid", phone: "691 11 74 51", rating: 5.0, status: "Reunión Agendada", owner_name: "Andrés" },
   { name: "We/On Palacio de Hielo", category: "Gimnasios", address: "C. de Silvano, 77, Hortaleza, Madrid", phone: "917 16 23 00", rating: 4.0, status: "Nuevo", owner_name: "Andrés" },

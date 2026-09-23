@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, Plus, LayoutGrid, Table2, Database, Loader2, Upload } from "lucide-react";
+import { Search, Plus, LayoutGrid, Table2, Database, Loader2, Upload, User, AlertCircle, CalendarClock } from "lucide-react";
 import { useLeads, useBulkSeedLeads } from "@/hooks/crm/useLeads";
-import { LEAD_CATEGORIES, LEAD_STATUSES, DISCOVERY_QUESTIONS, type Lead } from "@/lib/crm";
+import { useTeamMembers } from "@/hooks/crm/useTeamMembers";
+import { useLeadActivityCounts } from "@/hooks/crm/useLeadActivities";
+import { useAuth } from "@/hooks/useAuth";
+import { LEAD_CATEGORIES, LEAD_STATUSES, DISCOVERY_QUESTIONS, teamMemberLabel, type Lead } from "@/lib/crm";
 import { discoveryCount } from "@/components/app/crm/DiscoveryProgress";
 import { LeadsTable } from "@/components/app/crm/LeadsTable";
 import { LeadsKanban } from "@/components/app/crm/LeadsKanban";
@@ -41,12 +44,18 @@ function MetricCard({
 export default function Ubicaciones() {
   const { data: leads = [], isLoading } = useLeads();
   const seed = useBulkSeedLeads();
+  const { data: teamMembers = [] } = useTeamMembers();
+  const { data: activityCounts = {} } = useLeadActivityCounts();
+  const { user } = useAuth();
   const { toast } = useToast();
 
   const [view, setView] = useState<"tabla" | "kanban">("tabla");
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<"Todos" | string>("Todos");
   const [st, setSt] = useState<"Todos" | string>("Todos");
+  const [ownerFilter, setOwnerFilter] = useState("");
+  const [noActivityFilter, setNoActivityFilter] = useState(false);
+  const [sortByNextStep, setSortByNextStep] = useState(false);
 
   const [openLead, setOpenLead] = useState<Lead | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -82,9 +91,11 @@ export default function Ubicaciones() {
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
-    return leads.filter((l) => {
+    let result = leads.filter((l) => {
       if (cat !== "Todos" && l.category !== cat) return false;
       if (st !== "Todos" && l.status !== st) return false;
+      if (ownerFilter && l.assigned_to !== ownerFilter) return false;
+      if (noActivityFilter && (activityCounts[l.id] ?? 0) > 0) return false;
       if (!term) return true;
       return (
         l.name.toLowerCase().includes(term) ||
@@ -93,7 +104,15 @@ export default function Ubicaciones() {
         (l.email ?? "").toLowerCase().includes(term)
       );
     });
-  }, [q, cat, st, leads]);
+    if (sortByNextStep) {
+      result = [...result].sort((a, b) => {
+        if (!a.next_action_at) return 1;
+        if (!b.next_action_at) return -1;
+        return a.next_action_at.localeCompare(b.next_action_at);
+      });
+    }
+    return result;
+  }, [q, cat, st, ownerFilter, noActivityFilter, sortByNextStep, leads, activityCounts]);
 
   const openDrawer = (lead: Lead) => {
     setOpenLead(lead);
@@ -139,12 +158,7 @@ export default function Ubicaciones() {
               <Table2 className="h-3.5 w-3.5" /> Tabla
             </button>
             <button
-              onClick={() => {
-                setView("kanban");
-                setQ("");
-                setCat("Todos");
-                setSt("Todos");
-              }}
+              onClick={() => setView("kanban")}
               className={`inline-flex items-center gap-1.5 font-mono text-[11px] tracking-[0.08em] uppercase px-3 py-1.5 rounded-full transition-colors ${view === "kanban" ? "bg-paper text-ink shadow-sm" : "text-muted-foreground hover:text-ink"}`}
             >
               <LayoutGrid className="h-3.5 w-3.5" /> Kanban
@@ -177,9 +191,9 @@ export default function Ubicaciones() {
         <MetricCard label="Discovery" value={`${counts.discoveryPct}%`} dotClass="bg-muted-ink" />
       </div>
 
-      {/* Controls (solo en vista Tabla) */}
-      {view === "tabla" && (
-        <div className="bg-paper border border-line rounded-xl p-4 flex flex-col md:flex-row gap-3">
+      {/* Controles: búsqueda, filtros y vistas rápidas (aplican a Tabla y Kanban) */}
+      <div className="bg-paper border border-line rounded-xl p-4 flex flex-col gap-3">
+        <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="h-4 w-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
@@ -213,8 +227,42 @@ export default function Ubicaciones() {
               </option>
             ))}
           </select>
+          <select
+            value={ownerFilter}
+            onChange={(e) => setOwnerFilter(e.target.value)}
+            className="form-input md:w-48"
+          >
+            <option value="">Todos los asignados</option>
+            {teamMembers.map((m) => (
+              <option key={m.id} value={m.id}>
+                {teamMemberLabel(m)}
+              </option>
+            ))}
+          </select>
         </div>
-      )}
+        <div className="flex flex-wrap items-center gap-2">
+          {user && (
+            <button
+              onClick={() => setOwnerFilter((prev) => (prev === user.id ? "" : user.id))}
+              className={`inline-flex items-center gap-1.5 font-mono text-[11px] tracking-[0.08em] uppercase px-3 py-2 rounded-full border transition-colors ${ownerFilter === user.id ? "bg-ink text-paper border-ink" : "border-line text-muted-foreground hover:text-ink hover:border-ink/30"}`}
+            >
+              <User className="h-3.5 w-3.5" /> Mis leads
+            </button>
+          )}
+          <button
+            onClick={() => setNoActivityFilter((v) => !v)}
+            className={`inline-flex items-center gap-1.5 font-mono text-[11px] tracking-[0.08em] uppercase px-3 py-2 rounded-full border transition-colors ${noActivityFilter ? "bg-destructive text-paper border-destructive" : "border-line text-muted-foreground hover:text-ink hover:border-ink/30"}`}
+          >
+            <AlertCircle className="h-3.5 w-3.5" /> Sin actividad
+          </button>
+          <button
+            onClick={() => setSortByNextStep((v) => !v)}
+            className={`inline-flex items-center gap-1.5 font-mono text-[11px] tracking-[0.08em] uppercase px-3 py-2 rounded-full border transition-colors ${sortByNextStep ? "bg-ink text-paper border-ink" : "border-line text-muted-foreground hover:text-ink hover:border-ink/30"}`}
+          >
+            <CalendarClock className="h-3.5 w-3.5" /> Ordenar por próxima acción
+          </button>
+        </div>
+      </div>
 
 
       {/* Loading */}
@@ -268,9 +316,14 @@ export default function Ubicaciones() {
       {!isLoading && leads.length > 0 && (
         <>
           {view === "tabla" ? (
-            <LeadsTable leads={filtered} onOpen={openDrawer} />
+            <LeadsTable leads={filtered} onOpen={openDrawer} teamMembers={teamMembers} />
           ) : (
-            <LeadsKanban leads={leads} onOpen={openDrawer} />
+            <LeadsKanban
+              leads={filtered}
+              onOpen={openDrawer}
+              teamMembers={teamMembers}
+              activityCounts={activityCounts}
+            />
           )}
 
         </>

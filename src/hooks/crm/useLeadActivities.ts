@@ -40,7 +40,25 @@ export function useCreateActivity() {
       if (error) throw error;
       return data as LeadActivity;
     },
-    onSuccess: (_d, vars) =>
-      qc.invalidateQueries({ queryKey: ["lead_activities", vars.lead_id] }),
+    onSuccess: (_d, vars) => {
+      qc.invalidateQueries({ queryKey: ["lead_activities", vars.lead_id] });
+      qc.invalidateQueries({ queryKey: ["lead_activity_counts"] });
+    },
+  });
+}
+
+/** Nº de actividades registradas por lead, para el badge del Kanban y el filtro "sin actividad". */
+export function useLeadActivityCounts() {
+  return useQuery({
+    queryKey: ["lead_activity_counts"],
+    queryFn: async (): Promise<Record<string, number>> => {
+      const { data, error } = await supabase.from("lead_activities").select("lead_id");
+      if (error) throw error;
+      const counts: Record<string, number> = {};
+      for (const row of data as { lead_id: string }[]) {
+        counts[row.lead_id] = (counts[row.lead_id] ?? 0) + 1;
+      }
+      return counts;
+    },
   });
 }
