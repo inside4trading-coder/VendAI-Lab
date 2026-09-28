@@ -156,7 +156,7 @@ export default function Dashboard() {
   const totalPipeline = pipeline.reduce((s, p) => s + p.value, 0) || 1;
 
   return (
-    <section className="container py-10 space-y-8">
+    <section className="w-full px-6 lg:px-10 py-10 space-y-8">
       {/* Header */}
       <div>
         <span className="eyebrow">Lab · Dashboard</span>

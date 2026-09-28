@@ -17,7 +17,7 @@ export default function Configuracion() {
   const canRoles = useCan("manage_roles");
 
   return (
-    <section className="container py-10 space-y-8">
+    <section className="w-full px-6 lg:px-10 py-10 space-y-8">
       <div>
         <span className="eyebrow">Lab · Configuración</span>
         <h1 className="mt-3 text-[clamp(26px,3.4vw,38px)] leading-tight tracking-tight text-ink">
