@@ -179,6 +179,66 @@ export type Database = {
         }
         Relationships: []
       }
+      finance_movements: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string
+          currency: string
+          description: string
+          id: string
+          kind: string
+          member_id: string | null
+          occurred_on: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string
+          currency?: string
+          description?: string
+          id?: string
+          kind: string
+          member_id?: string | null
+          occurred_on?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string
+          currency?: string
+          description?: string
+          id?: string
+          kind?: string
+          member_id?: string | null
+          occurred_on?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      finance_settings: {
+        Row: {
+          eur_usd_rate: number
+          id: boolean
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          eur_usd_rate?: number
+          id?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          eur_usd_rate?: number
+          id?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       lead_activities: {
         Row: {
           body: string | null
