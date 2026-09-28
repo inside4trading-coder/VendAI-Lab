@@ -1,10 +1,11 @@
 // Cruce de la facturación de Zadarma (/v1/statistics/) con las llamadas de la centralita
-// (/v1/statistics/pbx/). Los dos endpoints usan ids distintos, así que se emparejan por
-// número, extensión y hora de inicio. Sin dependencias de Deno para poder testearlo con vitest.
+// (/v1/statistics/pbx/). Los dos endpoints usan ids distintos y su `sip` tampoco coincide
+// (facturación trae el login SIP de la cuenta, la centralita la extensión), así que se
+// emparejan por número y hora de inicio. Sin dependencias de Deno para testearlo con vitest.
 
 export interface BillingEntry {
   id?: unknown;
-  sip?: unknown;
+  sip?: unknown; // login SIP de la cuenta, no la extensión: no sirve para cruzar
   callstart?: unknown;
   from?: unknown;
   to?: unknown;
@@ -18,7 +19,6 @@ export interface PbxCallKey {
   callstart: string; // "YYYY-MM-DD HH:MM:SS", misma zona horaria que la facturación
   destination: string;
   caller: string;
-  sip: string;
 }
 
 export interface BillingMatch {
@@ -38,10 +38,13 @@ function toNumber(value: unknown): number {
   return Number.isFinite(n) ? n : 0;
 }
 
-/** `billcost` es lo cobrado por la llamada; `cost` es la tarifa por minuto (solo como respaldo). */
+/**
+ * `billcost` es lo cobrado por la llamada; `cost` es la tarifa por minuto y solo se usa si
+ * `billcost` no viene (una llamada fallida trae billcost 0 pero tarifa > 0).
+ */
 export function billingCost(entry: BillingEntry): number {
-  const billed = toNumber(entry.billcost);
-  return billed > 0 ? billed : toNumber(entry.cost);
+  const hasBillcost = entry.billcost !== undefined && entry.billcost !== null && entry.billcost !== "";
+  return toNumber(hasBillcost ? entry.billcost : entry.cost);
 }
 
 function toEpochSeconds(value: unknown): number | null {
@@ -68,15 +71,12 @@ export function matchBillingToCalls(calls: PbxCallKey[], billing: BillingEntry[]
     if (entryStart === null) return;
     const to = digits(entry.to);
     const from = digits(entry.from);
-    const entrySip = digits(entry.sip);
 
     for (const call of calls) {
       const callStart = toEpochSeconds(call.callstart);
       if (callStart === null) continue;
       const diff = Math.abs(callStart - entryStart);
       if (diff > MAX_START_DIFF_SECONDS) continue;
-      const callSip = digits(call.sip);
-      if (callSip && entrySip && callSip !== entrySip) continue;
       const numberMatches =
         sameNumber(digits(call.destination), to) || sameNumber(digits(call.caller), from);
       if (numberMatches) pairs.push({ callId: call.callId, entryIndex, diff });

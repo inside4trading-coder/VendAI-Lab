@@ -270,8 +270,8 @@ Deno.serve(async (req) => {
 
     const stats = data.stats || [];
 
-    // /statistics y /statistics/pbx usan ids distintos: el coste se cruza por número,
-    // extensión y hora de inicio (ver billing.ts).
+    // /statistics y /statistics/pbx usan ids distintos: el coste se cruza por número
+    // y hora de inicio (ver billing.ts).
     const billingStats: BillingEntry[] = Array.isArray(billing?.stats) ? billing.stats : [];
     const billingByCall = matchBillingToCalls(
       stats.map((s: Record<string, unknown>) => ({
@@ -279,13 +279,14 @@ Deno.serve(async (req) => {
         callstart: String(s.callstart || s.call_start || ""),
         destination: String(s.destination || s.called_did || s.to || ""),
         caller: String(s.clid || s.caller_id || s.from || ""),
-        sip: sipOf(s),
       })),
       billingStats,
     );
+    const billingAvailable = billing?.status === "success";
+    const billedTotal = [...billingByCall.values()].reduce((sum, b) => sum + b.cost, 0);
     console.log(
       `Billing entries: ${billingStats.length}, matched to calls: ${billingByCall.size}, ` +
-        `fields: ${billingStats[0] ? Object.keys(billingStats[0]).join(",") : "none"}`,
+        `billed total: ${billedTotal.toFixed(4)}`,
     );
 
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -325,8 +326,8 @@ Deno.serve(async (req) => {
         talk_duration: talkSeconds,
         sip,
         agent_name: sipMap[sip] || sip || "Sin asignar",
-        cost: billed?.cost ?? 0,
-        cost_currency: billed?.currency ?? null,
+        // Si la facturación falló (p. ej. 429), no se envía coste para no pisar el guardado.
+        ...(billingAvailable ? { cost: billed?.cost ?? 0, cost_currency: billed?.currency ?? null } : {}),
         is_recorded: String(s.is_recorded).toLowerCase() === "true" || Boolean(s.recorded),
         recording_url: String(s.recording || s.record_link || ""),
         raw_data: s,
