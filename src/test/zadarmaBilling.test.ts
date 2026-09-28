@@ -11,7 +11,6 @@ const pbx = (overrides: Partial<PbxCallKey> = {}): PbxCallKey => ({
   callstart: "2026-09-28 19:06:51",
   destination: "584245107856",
   caller: "Andres (100) ",
-  sip: "100",
   ...overrides,
 });
 
@@ -34,6 +33,10 @@ describe("billingCost", () => {
 
   it("falls back to cost when billcost is missing", () => {
     expect(billingCost(bill({ billcost: undefined, cost: 0.08 }))).toBe(0.08);
+  });
+
+  it("does not use the per-minute rate when billcost is 0 (failed call)", () => {
+    expect(billingCost(bill({ billcost: 0, cost: 0.08 }))).toBe(0);
   });
 
   it("returns 0 for non-numeric values", () => {
@@ -84,9 +87,24 @@ describe("matchBillingToCalls", () => {
     expect(result.get("1790615211.333044")?.cost).toBe(0.03);
   });
 
-  it("requires the same extension when both sides report one", () => {
-    const result = matchBillingToCalls([pbx({ sip: "101" })], [bill({ sip: "100" })]);
-    expect(result.size).toBe(0);
+  it("ignores the account SIP login in billing, which differs from the PBX extension", () => {
+    const result = matchBillingToCalls([pbx()], [bill({ sip: "166023" })]);
+    expect(result.get("1790615211.333044")?.cost).toBe(0.12);
+  });
+
+  it("matches numbers dialled without country code (real Zadarma format)", () => {
+    const result = matchBillingToCalls(
+      [
+        pbx({ callId: "a", callstart: "2026-09-27 17:35:50", destination: "6275999" }),
+        pbx({ callId: "b", callstart: "2026-09-27 17:36:01", destination: "627596999" }),
+      ],
+      [
+        bill({ callstart: "2026-09-27 17:35:52", to: 3406275999, billcost: 0.05 }),
+        bill({ callstart: "2026-09-27 17:36:03", to: 340627596999, billcost: 0.07 }),
+      ],
+    );
+    expect(result.get("a")?.cost).toBe(0.05);
+    expect(result.get("b")?.cost).toBe(0.07);
   });
 
   it("skips billing entries without cost", () => {
