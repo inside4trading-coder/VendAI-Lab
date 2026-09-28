@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import { createHmac, createHash } from "node:crypto";
+import { matchBillingToCalls, type BillingEntry } from "./billing.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -192,6 +193,10 @@ async function zadarmaRequest(
 }
 
 
+const sipOf = (s: Record<string, unknown>) => String(s.sip || s.internal || "");
+const callIdOf = (s: Record<string, unknown>) =>
+  String(s.call_id || s.pbx_call_id || s.id || `${s.callstart}_${sipOf(s)}`);
+
 function mapStatus(disposition: string | undefined, seconds: number): string {
   if (!disposition) return seconds > 0 ? "answered" : "no_answer";
   const d = disposition.toLowerCase();
@@ -265,20 +270,23 @@ Deno.serve(async (req) => {
 
     const stats = data.stats || [];
 
-    // Build cost map from /statistics endpoint. Indexes by call_id and pbx_call_id
-    // so we can match either id format coming back from /statistics/pbx.
-    const billingStats: Array<Record<string, unknown>> = Array.isArray(billing?.stats) ? billing.stats : [];
-    const costMap: Record<string, number> = {};
-    for (const b of billingStats) {
-      const c = Number(b.cost ?? b.bill_cost ?? 0);
-      if (!c || Number.isNaN(c)) continue;
-      const ids = [b.call_id, b.id, b.pbx_call_id, b.callid].filter(Boolean).map(String);
-      for (const id of ids) {
-        // Keep max cost per id (some calls split into multiple legs)
-        costMap[id] = Math.max(costMap[id] || 0, c);
-      }
-    }
-    console.log(`Billing entries: ${billingStats.length}, unique cost ids: ${Object.keys(costMap).length}`);
+    // /statistics y /statistics/pbx usan ids distintos: el coste se cruza por número,
+    // extensión y hora de inicio (ver billing.ts).
+    const billingStats: BillingEntry[] = Array.isArray(billing?.stats) ? billing.stats : [];
+    const billingByCall = matchBillingToCalls(
+      stats.map((s: Record<string, unknown>) => ({
+        callId: callIdOf(s),
+        callstart: String(s.callstart || s.call_start || ""),
+        destination: String(s.destination || s.called_did || s.to || ""),
+        caller: String(s.clid || s.caller_id || s.from || ""),
+        sip: sipOf(s),
+      })),
+      billingStats,
+    );
+    console.log(
+      `Billing entries: ${billingStats.length}, matched to calls: ${billingByCall.size}, ` +
+        `fields: ${billingStats[0] ? Object.keys(billingStats[0]).join(",") : "none"}`,
+    );
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -289,8 +297,8 @@ Deno.serve(async (req) => {
     });
 
     const calls = stats.map((s: Record<string, unknown>) => {
-      const sip = String(s.sip || s.internal || "");
-      const callId = String(s.call_id || s.pbx_call_id || s.id || `${s.callstart}_${sip}`);
+      const sip = sipOf(s);
+      const callId = callIdOf(s);
       const seconds = Number(s.seconds || s.duration || 0);
       const talkSeconds = Number(s.talk_seconds || s.billseconds || seconds);
 
@@ -302,9 +310,7 @@ Deno.serve(async (req) => {
       }
 
       const pbxCallId = String(s.pbx_call_id || "");
-      const resolvedCost = costMap[callId]
-        ?? costMap[pbxCallId]
-        ?? Number(s.cost || s.bill_cost || 0);
+      const billed = billingByCall.get(callId);
 
       return {
         call_id: callId,
@@ -319,7 +325,8 @@ Deno.serve(async (req) => {
         talk_duration: talkSeconds,
         sip,
         agent_name: sipMap[sip] || sip || "Sin asignar",
-        cost: resolvedCost,
+        cost: billed?.cost ?? 0,
+        cost_currency: billed?.currency ?? null,
         is_recorded: String(s.is_recorded).toLowerCase() === "true" || Boolean(s.recorded),
         recording_url: String(s.recording || s.record_link || ""),
         raw_data: s,

@@ -20,6 +20,7 @@ export interface CallRecord {
   sip: string | null;
   agent_name: string | null;
   cost: number;
+  cost_currency: string | null;
   is_recorded: boolean;
   recording_url: string | null;
 }
@@ -31,6 +32,8 @@ export interface CallKPIs {
   validRate: number;
   minutesTalked: number;
   totalCost: number;
+  /** Moneda en la que factura Zadarma; null si aún no hay llamadas facturadas. */
+  costCurrency: string | null;
 }
 
 export interface DailyData {
@@ -63,12 +66,20 @@ export interface CallsData {
   dailyData: DailyData[];
   hourlyData: HourlyData[];
   agentData: AgentData[];
-  recentCalls: CallRecord[];
+  /** Todas las llamadas del periodo, de más reciente a más antigua. */
+  calls: CallRecord[];
+}
+
+export type CallStatusFilter = "all" | "answered" | "valid" | "no_answer" | "busy" | "missed";
+export type CallDirectionFilter = "all" | "incoming" | "outgoing" | "internal";
+
+export interface CallFilters {
+  status: CallStatusFilter;
+  direction: CallDirectionFilter;
 }
 
 /** Una llamada es "válida" si fue contestada y la conversación superó este umbral. */
 const VALID_CALL_MIN_TALK_SECONDS = 30;
-const RECENT_CALLS_LIMIT = 50;
 const DEFAULT_LOOKBACK_DAYS = 30;
 
 const round1 = (n: number) => Math.round(n * 10) / 10;
@@ -170,10 +181,22 @@ export function buildCallsData(records: CallRecord[]): CallsData {
       validRate: pct(valid, totalCalls),
       minutesTalked: Math.round(sumTalk(records) / 60),
       totalCost: round2(sumCost(records)),
+      costCurrency: records.find((c) => c.cost_currency)?.cost_currency ?? null,
     },
     dailyData: buildDailyData(records),
     hourlyData: buildHourlyData(records),
     agentData: buildAgentData(records),
-    recentCalls: records.slice(0, RECENT_CALLS_LIMIT),
+    calls: records,
   };
+}
+
+/** Filtra la lista de llamadas por estado ("valid" = contestada y > 30 s) y dirección. */
+export function filterCalls(calls: CallRecord[], filters: CallFilters): CallRecord[] {
+  return calls.filter((c) => {
+    const statusOk =
+      filters.status === "all" ||
+      (filters.status === "valid" ? isValidCall(c) : c.status === filters.status);
+    const directionOk = filters.direction === "all" || c.direction === filters.direction;
+    return statusOk && directionOk;
+  });
 }

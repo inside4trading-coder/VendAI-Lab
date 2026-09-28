@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCallsData, getDateRange, isValidCall, type CallRecord } from "./calls";
+import { buildCallsData, filterCalls, getDateRange, isValidCall, type CallRecord } from "./calls";
 
 function makeCall(overrides: Partial<CallRecord> = {}): CallRecord {
   return {
@@ -17,6 +17,7 @@ function makeCall(overrides: Partial<CallRecord> = {}): CallRecord {
     sip: "100",
     agent_name: "Yannick",
     cost: 0.1,
+    cost_currency: "USD",
     is_recorded: false,
     recording_url: null,
     ...overrides,
@@ -71,6 +72,7 @@ describe("buildCallsData", () => {
       validRate: 0,
       minutesTalked: 0,
       totalCost: 0,
+      costCurrency: null,
     });
     expect(data.dailyData).toEqual([]);
     expect(data.hourlyData).toHaveLength(24);
@@ -136,8 +138,48 @@ describe("buildCallsData", () => {
     );
   });
 
-  it("limits recent calls to 50", () => {
+  it("exposes every call of the period", () => {
     const calls = Array.from({ length: 60 }, () => makeCall());
-    expect(buildCallsData(calls).recentCalls).toHaveLength(50);
+    expect(buildCallsData(calls).calls).toHaveLength(60);
+  });
+});
+
+describe("costCurrency", () => {
+  it("uses the currency reported by the billed calls", () => {
+    const data = buildCallsData([makeCall({ cost_currency: null, cost: 0 }), makeCall({ cost_currency: "USD" })]);
+    expect(data.kpis.costCurrency).toBe("USD");
+  });
+
+  it("is null when no call has a currency", () => {
+    expect(buildCallsData([makeCall({ cost_currency: null })]).kpis.costCurrency).toBeNull();
+  });
+});
+
+describe("filterCalls", () => {
+  const calls = [
+    makeCall({ status: "answered", direction: "outgoing" }),
+    makeCall({ status: "no_answer", direction: "outgoing" }),
+    makeCall({ status: "answered", direction: "incoming" }),
+    makeCall({ status: "missed", direction: "incoming" }),
+  ];
+
+  it("returns every call for 'all' filters", () => {
+    expect(filterCalls(calls, { status: "all", direction: "all" })).toHaveLength(4);
+  });
+
+  it("keeps only answered calls", () => {
+    const result = filterCalls(calls, { status: "answered", direction: "all" });
+    expect(result.map((c) => c.status)).toEqual(["answered", "answered"]);
+  });
+
+  it("combines status and direction", () => {
+    const result = filterCalls(calls, { status: "answered", direction: "incoming" });
+    expect(result).toEqual([calls[2]]);
+  });
+
+  it("keeps only valid calls for the 'valid' status", () => {
+    const valid = makeCall({ status: "answered", talk_duration: 45 });
+    const short = makeCall({ status: "answered", talk_duration: 10 });
+    expect(filterCalls([valid, short], { status: "valid", direction: "all" })).toEqual([valid]);
   });
 });

@@ -19,7 +19,7 @@ export function useCallsData(period: CallPeriod, customRange?: DateRange) {
       const { data, error } = await supabase
         .from("calls_cache")
         .select(
-          "id, call_id, pbx_call_id, call_start, call_end, caller, destination, direction, status, duration, talk_duration, sip, agent_name, cost, is_recorded, recording_url",
+          "id, call_id, pbx_call_id, call_start, call_end, caller, destination, direction, status, duration, talk_duration, sip, agent_name, cost, cost_currency, is_recorded, recording_url",
         )
         .gte("call_start", start.toISOString())
         .lte("call_start", end.toISOString())
