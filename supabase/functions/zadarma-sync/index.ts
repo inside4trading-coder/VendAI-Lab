@@ -1,0 +1,373 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { createHmac, createHash } from "node:crypto";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const supabaseAnonKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY")!;
+
+const MAX_SYNC_RANGE_DAYS = 93;
+const DATETIME_RE = /^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}/;
+
+function jsonResponse(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+/** Solo miembros autenticados del equipo pueden disparar el sync (usa service role). */
+async function isAuthenticated(req: Request): Promise<boolean> {
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader) return false;
+  const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: authHeader } },
+  });
+  const { data, error } = await userClient.auth.getUser();
+  return !error && Boolean(data.user);
+}
+
+const zadarmaTimeZone = Deno.env.get("ZADARMA_TIMEZONE") ?? "Europe/Madrid";
+
+function md5(data: string): string {
+  return createHash("md5").update(data).digest("hex");
+}
+
+function httpBuildQuery(params: Record<string, string>): string {
+  const sorted = Object.keys(params).sort().reduce((obj, key) => {
+    obj[key] = params[key];
+    return obj;
+  }, {} as Record<string, string>);
+  return new URLSearchParams(sorted).toString().replace(/%20/g, "+");
+}
+
+function getTimeZoneOffsetMinutes(date: Date, timeZone: string): number {
+  const offsetPart = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    timeZoneName: "shortOffset",
+  }).formatToParts(date).find((part) => part.type === "timeZoneName")?.value;
+
+  if (!offsetPart || offsetPart === "GMT") return 0;
+
+  const match = offsetPart.match(/^GMT([+-])(\d{1,2})(?::?(\d{2}))?$/);
+  if (!match) return 0;
+
+  const [, sign, hours, minutes] = match;
+  const totalMinutes = Number(hours) * 60 + Number(minutes || 0);
+  return sign === "+" ? totalMinutes : -totalMinutes;
+}
+
+function normalizeIncomingUtcString(value: string): Date {
+  const normalized = value.includes("T")
+    ? value
+    : value.replace(" ", "T");
+
+  return new Date(normalized.endsWith("Z") ? normalized : `${normalized}Z`);
+}
+
+function formatForZadarma(value: string, timeZone: string): string {
+  const date = normalizeIncomingUtcString(value);
+  if (Number.isNaN(date.getTime())) {
+    throw new Error(`Invalid datetime received: ${value}`);
+  }
+
+  const parts = new Intl.DateTimeFormat("sv-SE", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(date);
+
+  const map = Object.fromEntries(parts.filter((part) => part.type !== "literal").map((part) => [part.type, part.value]));
+  return `${map.year}-${map.month}-${map.day} ${map.hour}:${map.minute}:${map.second}`;
+}
+
+function parseZadarmaDateTime(value: unknown, timeZone: string): string | null {
+  if (typeof value !== "string" || !value.trim()) return null;
+
+  const match = value.trim().match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})$/);
+  if (!match) return null;
+
+  const [, year, month, day, hour, minute, second] = match;
+  const assumedUtcMs = Date.UTC(
+    Number(year),
+    Number(month) - 1,
+    Number(day),
+    Number(hour),
+    Number(minute),
+    Number(second),
+  );
+
+  const offsetMinutes = getTimeZoneOffsetMinutes(new Date(assumedUtcMs), timeZone);
+  return new Date(assumedUtcMs - offsetMinutes * 60_000).toISOString();
+}
+
+async function fetchRecordingUrl(
+  pbxCallId: string,
+  key: string,
+  secret: string,
+): Promise<string | null> {
+  try {
+    const data = await zadarmaRequest(
+      "pbx/record/request",
+      { pbx_call_id: pbxCallId, lifetime: "5184000" },
+      key,
+      secret,
+    );
+    if (data?.status !== "success") return null;
+    const link = data.link || (Array.isArray(data.links) ? data.links[0] : null);
+    return typeof link === "string" && link ? link : null;
+  } catch (err) {
+    console.warn(`fetchRecordingUrl failed for ${pbxCallId}:`, err instanceof Error ? err.message : err);
+    return null;
+  }
+}
+
+async function enrichWithRecordings(
+  calls: Array<Record<string, unknown>>,
+  key: string,
+  secret: string,
+  concurrency = 2,
+): Promise<number> {
+  const targets = calls.filter((c) => {
+    const pbx = String(c.pbx_call_id || "");
+    return pbx && Number(c.talk_duration || 0) > 0 && !c.recording_url;
+  });
+  let enriched = 0;
+  for (let i = 0; i < targets.length; i += concurrency) {
+    const batch = targets.slice(i, i + concurrency);
+    await Promise.all(
+      batch.map(async (call) => {
+        const link = await fetchRecordingUrl(String(call.pbx_call_id), key, secret);
+        if (link) {
+          call.recording_url = link;
+          call.is_recorded = true;
+          enriched++;
+        }
+      }),
+    );
+  }
+  return enriched;
+}
+
+async function zadarmaRequest(
+  apiMethod: string,
+  params: Record<string, string>,
+  key: string,
+  secret: string,
+  retries = 3,
+) {
+  const method = `/v1/${apiMethod}/`;
+  const paramsStr = httpBuildQuery(params);
+  const md5Hash = md5(paramsStr);
+  const signStr = method + paramsStr + md5Hash;
+  const sha1Hex = createHmac("sha1", secret).update(signStr).digest("hex");
+  const signature = btoa(sha1Hex);
+
+  const url = `https://api.zadarma.com${method}?${paramsStr}`;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const res = await fetch(url, { headers: { Authorization: `${key}:${signature}` } });
+    if (res.status === 429 && attempt < retries) {
+      const wait = 1000 * Math.pow(2, attempt); // 1s, 2s, 4s
+      console.warn(`Zadarma 429 on ${apiMethod}, retrying in ${wait}ms (attempt ${attempt + 1}/${retries})`);
+      await new Promise((r) => setTimeout(r, wait));
+      continue;
+    }
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Zadarma API error ${res.status}: ${text}`);
+    }
+    return res.json();
+  }
+  throw new Error(`Zadarma API error: exhausted retries for ${apiMethod}`);
+}
+
+
+function mapStatus(disposition: string | undefined, seconds: number): string {
+  if (!disposition) return seconds > 0 ? "answered" : "no_answer";
+  const d = disposition.toLowerCase();
+  if (d === "answered" || seconds > 0) return "answered";
+  if (d === "busy") return "busy";
+  if (d === "no answer" || d === "noanswer" || d === "no_answer") return "no_answer";
+  if (d === "cancel" || d === "failed") return "missed";
+  return "no_answer";
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "Method not allowed" }, 405);
+  }
+
+  try {
+    if (!(await isAuthenticated(req))) {
+      return jsonResponse({ error: "Unauthorized" }, 401);
+    }
+
+    const zadarmaKey = Deno.env.get("ZADARMA_KEY");
+    const zadarmaSecret = Deno.env.get("ZADARMA_SECRET");
+    if (!zadarmaKey || !zadarmaSecret) {
+      return jsonResponse({ error: "Zadarma no está configurado (faltan ZADARMA_KEY / ZADARMA_SECRET)" }, 503);
+    }
+
+    const body = await req.json().catch(() => ({}));
+    const { start, end } = body as { start?: unknown; end?: unknown };
+
+    if (typeof start !== "string" || typeof end !== "string" || !DATETIME_RE.test(start) || !DATETIME_RE.test(end)) {
+      return jsonResponse({ error: "start and end are required (YYYY-MM-DD HH:MM:SS)" }, 400);
+    }
+
+    const rangeMs = normalizeIncomingUtcString(end).getTime() - normalizeIncomingUtcString(start).getTime();
+    if (!(rangeMs >= 0) || rangeMs > MAX_SYNC_RANGE_DAYS * 86_400_000) {
+      return jsonResponse({ error: `Rango inválido (máx. ${MAX_SYNC_RANGE_DAYS} días)` }, 400);
+    }
+
+    const zadarmaStart = formatForZadarma(start, zadarmaTimeZone);
+    const zadarmaEnd = formatForZadarma(end, zadarmaTimeZone);
+
+    const params: Record<string, string> = {
+      start: zadarmaStart,
+      end: zadarmaEnd,
+      format: "json",
+      version: "2",
+    };
+
+    // Serialize calls to avoid Zadarma rate limits (User Limits = 429).
+    // 1) PBX details (no cost info in this endpoint)
+    const data = await zadarmaRequest("statistics/pbx", params, zadarmaKey, zadarmaSecret);
+    // small gap before next call
+    await new Promise((r) => setTimeout(r, 400));
+    // 2) Account statistics (contains real `cost` per outgoing call)
+    const billing = await zadarmaRequest("statistics", {
+      start: zadarmaStart,
+      end: zadarmaEnd,
+      format: "json",
+    }, zadarmaKey, zadarmaSecret).catch((err) => {
+      console.warn("statistics (billing) endpoint failed:", err instanceof Error ? err.message : err);
+      return { status: "error", stats: [] };
+    });
+
+    if (data.status !== "success") {
+      throw new Error(`Zadarma returned status: ${data.status} - ${JSON.stringify(data)}`);
+    }
+
+    const stats = data.stats || [];
+
+    // Build cost map from /statistics endpoint. Indexes by call_id and pbx_call_id
+    // so we can match either id format coming back from /statistics/pbx.
+    const billingStats: Array<Record<string, unknown>> = Array.isArray(billing?.stats) ? billing.stats : [];
+    const costMap: Record<string, number> = {};
+    for (const b of billingStats) {
+      const c = Number(b.cost ?? b.bill_cost ?? 0);
+      if (!c || Number.isNaN(c)) continue;
+      const ids = [b.call_id, b.id, b.pbx_call_id, b.callid].filter(Boolean).map(String);
+      for (const id of ids) {
+        // Keep max cost per id (some calls split into multiple legs)
+        costMap[id] = Math.max(costMap[id] || 0, c);
+      }
+    }
+    console.log(`Billing entries: ${billingStats.length}, unique cost ids: ${Object.keys(costMap).length}`);
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const { data: sipAgents } = await supabase.from("sip_agents").select("sip_id, agent_name");
+    const sipMap: Record<string, string> = {};
+    (sipAgents || []).forEach((a: { sip_id: string; agent_name: string }) => {
+      sipMap[a.sip_id] = a.agent_name;
+    });
+
+    const calls = stats.map((s: Record<string, unknown>) => {
+      const sip = String(s.sip || s.internal || "");
+      const callId = String(s.call_id || s.pbx_call_id || s.id || `${s.callstart}_${sip}`);
+      const seconds = Number(s.seconds || s.duration || 0);
+      const talkSeconds = Number(s.talk_seconds || s.billseconds || seconds);
+
+      let direction = "outgoing";
+      if (s.calltype === "IN_CALLS" || s.call_type === "incoming" || s.disposition === "incoming") {
+        direction = "incoming";
+      } else if (s.clid && s.destination) {
+        if (String(s.destination).length <= 4) direction = "incoming";
+      }
+
+      const pbxCallId = String(s.pbx_call_id || "");
+      const resolvedCost = costMap[callId]
+        ?? costMap[pbxCallId]
+        ?? Number(s.cost || s.bill_cost || 0);
+
+      return {
+        call_id: callId,
+        pbx_call_id: pbxCallId,
+        call_start: parseZadarmaDateTime(s.callstart || s.call_start, zadarmaTimeZone),
+        call_end: parseZadarmaDateTime(s.callend, zadarmaTimeZone),
+        caller: String(s.clid || s.caller_id || s.from || ""),
+        destination: String(s.destination || s.called_did || s.to || ""),
+        direction,
+        status: mapStatus(String(s.disposition || ""), seconds),
+        duration: seconds,
+        talk_duration: talkSeconds,
+        sip,
+        agent_name: sipMap[sip] || sip || "Sin asignar",
+        cost: resolvedCost,
+        is_recorded: String(s.is_recorded).toLowerCase() === "true" || Boolean(s.recorded),
+        recording_url: String(s.recording || s.record_link || ""),
+        raw_data: s,
+        synced_at: new Date().toISOString(),
+      };
+    });
+
+    // Pre-cargar URLs de grabación ya guardadas para no re-pedirlas a Zadarma
+    if (calls.length > 0) {
+      const callIds = calls.map((c: Record<string, unknown>) => String(c.call_id)).filter(Boolean);
+      const { data: existing } = await supabase
+        .from("calls_cache")
+        .select("call_id, recording_url")
+        .in("call_id", callIds);
+      const existingMap: Record<string, string> = {};
+      (existing || []).forEach((row: { call_id: string; recording_url: string | null }) => {
+        if (row.recording_url) existingMap[row.call_id] = row.recording_url;
+      });
+      calls.forEach((c: Record<string, unknown>) => {
+        const cached = existingMap[String(c.call_id)];
+        if (cached && !c.recording_url) {
+          c.recording_url = cached;
+          c.is_recorded = true;
+        }
+      });
+    }
+
+    // Para llamadas answered sin URL, pedirla a Zadarma (outgoing y algunas incoming)
+    const enrichedCount = await enrichWithRecordings(calls, zadarmaKey, zadarmaSecret);
+    console.log(`Enriched ${enrichedCount} call(s) with recording URLs`);
+
+    if (calls.length > 0) {
+      for (let i = 0; i < calls.length; i += 500) {
+        const batch = calls.slice(i, i + 500);
+        const { error: upsertError } = await supabase
+          .from("calls_cache")
+          .upsert(batch, { onConflict: "call_id" });
+
+        if (upsertError) {
+          console.error("Upsert error:", upsertError);
+          throw new Error(`DB upsert failed: ${upsertError.message}`);
+        }
+      }
+    }
+
+    return jsonResponse({ success: true, synced: calls.length, period: { start, end } });
+  } catch (error) {
+    console.error("Zadarma sync error:", error);
+    return jsonResponse({ error: "Error sincronizando con Zadarma" }, 500);
+  }
+});
