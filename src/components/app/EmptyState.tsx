@@ -14,7 +14,7 @@ export function EmptyState({
   description = "Esta sección está en desarrollo.",
 }: Props) {
   return (
-    <section className="container py-10">
+    <section className="w-full px-6 lg:px-10 py-10">
       <div className="mb-8">
         <span className="eyebrow">{kicker}</span>
       </div>

@@ -136,7 +136,7 @@ export default function Maquinas() {
 
 
   return (
-    <section className="container py-10 space-y-6">
+    <section className="w-full px-6 lg:px-10 py-10 space-y-6">
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
           <span className="eyebrow">Lab · Máquinas</span>
