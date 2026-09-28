@@ -49,6 +49,7 @@ export type Database = {
           call_start: string | null
           caller: string | null
           cost: number
+          cost_currency: string | null
           destination: string | null
           direction: string | null
           duration: number
@@ -69,6 +70,7 @@ export type Database = {
           call_start?: string | null
           caller?: string | null
           cost?: number
+          cost_currency?: string | null
           destination?: string | null
           direction?: string | null
           duration?: number
@@ -89,6 +91,7 @@ export type Database = {
           call_start?: string | null
           caller?: string | null
           cost?: number
+          cost_currency?: string | null
           destination?: string | null
           direction?: string | null
           duration?: number

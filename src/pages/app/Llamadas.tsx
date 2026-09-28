@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { AlertTriangle, Calendar, Download, Loader2, Phone, Play, RefreshCw, X } from "lucide-react";
 import {
   Bar,
@@ -15,7 +15,14 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import { useCallsData, useSyncCalls } from "@/hooks/calls/useCallsData";
-import type { CallPeriod, CallRecord, DateRange } from "@/lib/calls";
+import {
+  filterCalls,
+  type CallDirectionFilter,
+  type CallPeriod,
+  type CallRecord,
+  type CallStatusFilter,
+  type DateRange,
+} from "@/lib/calls";
 
 const periods: { key: Exclude<CallPeriod, "custom">; label: string }[] = [
   { key: "today", label: "Hoy" },
@@ -36,7 +43,30 @@ const DIRECTION_LABELS: Record<string, string> = {
   internal: "↔ Interna",
 };
 
-const eur2 = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" });
+/** Zadarma factura en la moneda de la cuenta; si aún no hay coste conocido se muestra en EUR. */
+const DEFAULT_COST_CURRENCY = "EUR";
+const formatCost = (amount: number, currency: string | null) =>
+  new Intl.NumberFormat("es-ES", { style: "currency", currency: currency || DEFAULT_COST_CURRENCY }).format(
+    Number(amount) || 0,
+  );
+
+const STATUS_FILTERS: { key: CallStatusFilter; label: string }[] = [
+  { key: "all", label: "Todas" },
+  { key: "answered", label: "Contestadas" },
+  { key: "valid", label: "Válidas" },
+  { key: "no_answer", label: "Sin respuesta" },
+  { key: "busy", label: "Ocupado" },
+  { key: "missed", label: "Perdidas" },
+];
+
+const DIRECTION_FILTERS: { key: CallDirectionFilter; label: string }[] = [
+  { key: "all", label: "Todas las direcciones" },
+  { key: "outgoing", label: "Salientes" },
+  { key: "incoming", label: "Entrantes" },
+  { key: "internal", label: "Internas" },
+];
+
+const CALLS_PAGE_SIZE = 50;
 const pct1 = (n: number) => `${n.toFixed(1)}%`;
 
 function formatDuration(seconds: number): string {
@@ -143,9 +173,21 @@ export default function Llamadas() {
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<CallStatusFilter>("all");
+  const [directionFilter, setDirectionFilter] = useState<CallDirectionFilter>("all");
+  const [visibleCount, setVisibleCount] = useState(CALLS_PAGE_SIZE);
 
   const { data, isLoading, error, refetch } = useCallsData(period, customRange);
   const sync = useSyncCalls();
+
+  const filteredCalls = useMemo(
+    () => filterCalls(data?.calls ?? [], { status: statusFilter, direction: directionFilter }),
+    [data, statusFilter, directionFilter],
+  );
+
+  useEffect(() => {
+    setVisibleCount(CALLS_PAGE_SIZE);
+  }, [data, statusFilter, directionFilter]);
 
   useEffect(() => {
     document.title = "Llamadas · VendAI";
@@ -291,7 +333,7 @@ export default function Llamadas() {
             <MetricCard label="Contestación" value={pct1(data.kpis.answerRate)} dotClass="bg-signal-blue" />
             <MetricCard label="Validez" value={pct1(data.kpis.validRate)} dotClass="bg-ventures-violet" />
             <MetricCard label="Minutos" value={data.kpis.minutesTalked} dotClass="bg-cyan" />
-            <MetricCard label="Coste" value={eur2.format(data.kpis.totalCost)} />
+            <MetricCard label="Coste" value={formatCost(data.kpis.totalCost, data.kpis.costCurrency)} />
           </div>
 
           {/* Gráficas */}
@@ -362,7 +404,7 @@ export default function Llamadas() {
                         <td className={`${tdClass} text-right`}>{a.avgDuration} min</td>
                         <td className={`${tdClass} text-right`}>{a.validRate}%</td>
                         <td className={`${tdClass} text-right`}>{a.answerRate}%</td>
-                        <td className={`${tdClass} text-right`}>{eur2.format(a.cost)}</td>
+                        <td className={`${tdClass} text-right`}>{formatCost(a.cost, data.kpis.costCurrency)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -373,9 +415,39 @@ export default function Llamadas() {
 
           {/* Llamadas recientes */}
           <div className="bg-paper border border-line rounded-xl overflow-hidden">
-            <h2 className="text-[15px] font-mono font-semibold tracking-tight text-ink px-5 pt-5 pb-3">
-              Llamadas recientes
-            </h2>
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 px-5 pt-5 pb-3">
+              <div className="flex items-baseline gap-3">
+                <h2 className="text-[15px] font-mono font-semibold tracking-tight text-ink">Llamadas</h2>
+                <span className="font-mono text-[11px] text-muted-foreground">
+                  {filteredCalls.length} de {data.calls.length}
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="inline-flex flex-wrap bg-panel border border-line rounded-full p-1">
+                  {STATUS_FILTERS.map((f) => (
+                    <button
+                      key={f.key}
+                      onClick={() => setStatusFilter(f.key)}
+                      className={`${pillBase} ${statusFilter === f.key ? "bg-paper text-ink shadow-sm" : "text-muted-foreground hover:text-ink"}`}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+                <select
+                  value={directionFilter}
+                  onChange={(e) => setDirectionFilter(e.target.value as CallDirectionFilter)}
+                  className="form-input w-auto font-mono text-[12px]"
+                  aria-label="Filtrar por dirección"
+                >
+                  {DIRECTION_FILTERS.map((f) => (
+                    <option key={f.key} value={f.key}>
+                      {f.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[980px] text-[14px]">
                 <thead>
@@ -391,7 +463,7 @@ export default function Llamadas() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.recentCalls.map((c) => {
+                  {filteredCalls.slice(0, visibleCount).map((c) => {
                     const st = STATUS_BADGES[c.status ?? ""] ?? STATUS_BADGES.no_answer;
                     return (
                       <tr key={c.id} className="border-b border-line/70 last:border-0 hover:bg-panel/60">
@@ -409,7 +481,7 @@ export default function Llamadas() {
                           </span>
                         </td>
                         <td className={`${tdClass} text-right font-mono text-[13px]`}>{formatDuration(c.duration)}</td>
-                        <td className={`${tdClass} text-right font-mono text-[13px]`}>{eur2.format(Number(c.cost) || 0)}</td>
+                        <td className={`${tdClass} text-right font-mono text-[13px]`}>{formatCost(c.cost, c.cost_currency ?? data.kpis.costCurrency)}</td>
                         <td className={tdClass}>
                           <RecordingCell
                             call={c}
@@ -421,9 +493,26 @@ export default function Llamadas() {
                       </tr>
                     );
                   })}
+                  {filteredCalls.length === 0 && (
+                    <tr>
+                      <td colSpan={8} className="px-5 py-10 text-center text-muted-foreground">
+                        Ninguna llamada coincide con los filtros.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
+            {filteredCalls.length > visibleCount && (
+              <div className="flex justify-center border-t border-line py-3">
+                <button
+                  onClick={() => setVisibleCount((n) => n + CALLS_PAGE_SIZE)}
+                  className={`${pillBase} border border-line text-ink hover:border-ink/30`}
+                >
+                  Ver más ({filteredCalls.length - visibleCount} restantes)
+                </button>
+              </div>
+            )}
           </div>
         </>
       )}
