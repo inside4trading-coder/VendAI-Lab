@@ -3,6 +3,7 @@ import {
   LayoutDashboard,
   Cpu,
   MapPin,
+  Phone,
   TrendingUp,
   Settings,
   ExternalLink,
@@ -31,6 +32,7 @@ const items = [
   { title: "Dashboard", url: "/app/dashboard", icon: LayoutDashboard },
   { title: "Máquinas", url: "/app/maquinas", icon: Cpu },
   { title: "CRM", url: "/app/ubicaciones", icon: MapPin },
+  { title: "Llamadas", url: "/app/llamadas", icon: Phone },
   { title: "Finanzas", url: "/app/finanzas", icon: TrendingUp },
   { title: "Configuración", url: "/app/configuracion", icon: Settings },
 ];

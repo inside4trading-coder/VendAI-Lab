@@ -41,6 +41,69 @@ export type Database = {
         }
         Relationships: []
       }
+      calls_cache: {
+        Row: {
+          agent_name: string | null
+          call_end: string | null
+          call_id: string
+          call_start: string | null
+          caller: string | null
+          cost: number
+          destination: string | null
+          direction: string | null
+          duration: number
+          id: string
+          is_recorded: boolean
+          pbx_call_id: string | null
+          raw_data: Json
+          recording_url: string | null
+          sip: string | null
+          status: string | null
+          synced_at: string
+          talk_duration: number
+        }
+        Insert: {
+          agent_name?: string | null
+          call_end?: string | null
+          call_id: string
+          call_start?: string | null
+          caller?: string | null
+          cost?: number
+          destination?: string | null
+          direction?: string | null
+          duration?: number
+          id?: string
+          is_recorded?: boolean
+          pbx_call_id?: string | null
+          raw_data?: Json
+          recording_url?: string | null
+          sip?: string | null
+          status?: string | null
+          synced_at?: string
+          talk_duration?: number
+        }
+        Update: {
+          agent_name?: string | null
+          call_end?: string | null
+          call_id?: string
+          call_start?: string | null
+          caller?: string | null
+          cost?: number
+          destination?: string | null
+          direction?: string | null
+          duration?: number
+          id?: string
+          is_recorded?: boolean
+          pbx_call_id?: string | null
+          raw_data?: Json
+          recording_url?: string | null
+          sip?: string | null
+          status?: string | null
+          synced_at?: string
+          talk_duration?: number
+        }
+        Relationships: []
+      }
       company_settings: {
         Row: {
           address: string | null
@@ -508,6 +571,27 @@ export type Database = {
           status?: string
           token?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      sip_agents: {
+        Row: {
+          agent_name: string
+          created_at: string
+          id: string
+          sip_id: string
+        }
+        Insert: {
+          agent_name: string
+          created_at?: string
+          id?: string
+          sip_id: string
+        }
+        Update: {
+          agent_name?: string
+          created_at?: string
+          id?: string
+          sip_id?: string
         }
         Relationships: []
       }
