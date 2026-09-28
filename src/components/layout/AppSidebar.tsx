@@ -6,7 +6,6 @@ import {
   Phone,
   TrendingUp,
   Settings,
-  ExternalLink,
   LogOut,
 } from "lucide-react";
 import {
@@ -36,8 +35,6 @@ const items = [
   { title: "Finanzas", url: "/app/finanzas", icon: TrendingUp },
   { title: "Configuración", url: "/app/configuracion", icon: Settings },
 ];
-
-const DRIVE_URL = "https://drive.google.com";
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -107,26 +104,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <div className="my-3 mx-3 h-px bg-sidebar-border" />
-
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  tooltip="Carpeta Drive"
-                  className="font-mono text-[12.5px] tracking-[0.04em] uppercase text-sidebar-foreground/65 hover:text-sidebar-foreground hover:bg-sidebar-accent"
-                >
-                  <a href={DRIVE_URL} target="_blank" rel="noreferrer noopener">
-                    <ExternalLink className="h-4 w-4" />
-                    <span>Carpeta Drive</span>
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter className="p-3 border-t border-sidebar-border">
