@@ -714,7 +714,27 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      lead_calls: {
+        Row: {
+          agent_name: string | null
+          call_start: string | null
+          caller: string | null
+          cost: number | null
+          cost_currency: string | null
+          destination: string | null
+          direction: string | null
+          duration: number | null
+          id: string | null
+          is_recorded: boolean | null
+          lead_id: string | null
+          lead_name: string | null
+          recording_url: string | null
+          sip: string | null
+          status: string | null
+          talk_duration: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
@@ -728,6 +748,7 @@ export type Database = {
         Args: { _lead_id: string; _user_id: string }
         Returns: boolean
       }
+      phone_key: { Args: { raw: string }; Returns: string }
       list_team_members: {
         Args: Record<PropertyKey, never>
         Returns: { id: string; email: string; full_name: string | null }[]

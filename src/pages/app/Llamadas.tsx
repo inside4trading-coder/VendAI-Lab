@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { AlertTriangle, Calendar, Download, Loader2, Phone, Play, RefreshCw, X } from "lucide-react";
+import { AlertTriangle, Calendar, Loader2, Phone, RefreshCw } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -14,12 +14,15 @@ import {
 } from "recharts";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 import { useCallsData, useSyncCalls } from "@/hooks/calls/useCallsData";
+import { useCallLeadLinks } from "@/hooks/calls/useLeadCalls";
+import { CallStatusBadge, RecordingCell } from "@/components/app/calls/callUi";
+import { DIRECTION_LABELS, formatCost, formatDateTime, formatDuration } from "@/lib/callFormat";
 import {
   filterCalls,
   type CallDirectionFilter,
   type CallPeriod,
-  type CallRecord,
   type CallStatusFilter,
   type DateRange,
 } from "@/lib/calls";
@@ -29,26 +32,6 @@ const periods: { key: Exclude<CallPeriod, "custom">; label: string }[] = [
   { key: "week", label: "7 días" },
   { key: "month", label: "30 días" },
 ];
-
-const STATUS_BADGES: Record<string, { label: string; className: string }> = {
-  answered: { label: "Contestada", className: "bg-crypto-green/10 text-crypto-green" },
-  no_answer: { label: "Sin respuesta", className: "bg-panel text-muted-foreground" },
-  busy: { label: "Ocupado", className: "bg-cyan/10 text-cyan" },
-  missed: { label: "Perdida", className: "bg-destructive/10 text-destructive" },
-};
-
-const DIRECTION_LABELS: Record<string, string> = {
-  incoming: "↙ Entrante",
-  outgoing: "↗ Saliente",
-  internal: "↔ Interna",
-};
-
-/** Zadarma factura en la moneda de la cuenta; si aún no hay coste conocido se muestra en EUR. */
-const DEFAULT_COST_CURRENCY = "EUR";
-const formatCost = (amount: number, currency: string | null) =>
-  new Intl.NumberFormat("es-ES", { style: "currency", currency: currency || DEFAULT_COST_CURRENCY }).format(
-    Number(amount) || 0,
-  );
 
 const STATUS_FILTERS: { key: CallStatusFilter; label: string }[] = [
   { key: "all", label: "Todas" },
@@ -68,22 +51,6 @@ const DIRECTION_FILTERS: { key: CallDirectionFilter; label: string }[] = [
 
 const CALLS_PAGE_SIZE = 50;
 const pct1 = (n: number) => `${n.toFixed(1)}%`;
-
-function formatDuration(seconds: number): string {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}:${s.toString().padStart(2, "0")}`;
-}
-
-function formatDateTime(iso: string | null): string {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleString("es-ES", {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 const pillBase =
   "inline-flex items-center gap-1.5 font-mono text-[11px] tracking-[0.08em] uppercase px-3 py-1.5 rounded-full transition-colors";
@@ -118,54 +85,6 @@ function Panel({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-function RecordingCell({
-  call,
-  playing,
-  onPlay,
-  onStop,
-}: {
-  call: CallRecord;
-  playing: boolean;
-  onPlay: () => void;
-  onStop: () => void;
-}) {
-  if (!call.is_recorded || !call.recording_url) {
-    return <span className="text-muted-foreground">—</span>;
-  }
-  const download = (
-    <a
-      href={call.recording_url}
-      download
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-muted-foreground hover:text-ink"
-      title="Descargar"
-    >
-      <Download className="h-3.5 w-3.5" />
-    </a>
-  );
-  return (
-    <div className="flex items-center gap-2">
-      {playing ? (
-        <>
-          <audio controls autoPlay src={call.recording_url} className="h-8 max-w-[220px]" onEnded={onStop} />
-          <button onClick={onStop} title="Cerrar" className="text-muted-foreground hover:text-ink">
-            <X className="h-3.5 w-3.5" />
-          </button>
-        </>
-      ) : (
-        <button
-          onClick={onPlay}
-          className="inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.08em] text-signal-blue hover:text-ink"
-        >
-          <Play className="h-3.5 w-3.5" /> Oír
-        </button>
-      )}
-      {download}
-    </div>
-  );
-}
-
 export default function Llamadas() {
   const { toast } = useToast();
   const [period, setPeriod] = useState<CallPeriod>("month");
@@ -179,6 +98,7 @@ export default function Llamadas() {
 
   const { data, isLoading, error, refetch } = useCallsData(period, customRange);
   const sync = useSyncCalls();
+  const { data: leadLinks } = useCallLeadLinks(period, customRange);
 
   const filteredCalls = useMemo(
     () => filterCalls(data?.calls ?? [], { status: statusFilter, direction: directionFilter }),
@@ -449,12 +369,13 @@ export default function Llamadas() {
               </div>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[980px] text-[14px]">
+              <table className="w-full min-w-[1140px] text-[14px]">
                 <thead>
                   <tr className="border-y border-line bg-panel/50">
                     <th className={thClass}>Fecha/Hora</th>
                     <th className={thClass}>Origen</th>
                     <th className={thClass}>Destino</th>
+                    <th className={thClass}>Lead</th>
                     <th className={thClass}>Dirección</th>
                     <th className={thClass}>Estado</th>
                     <th className={thRight}>Duración</th>
@@ -464,21 +385,30 @@ export default function Llamadas() {
                 </thead>
                 <tbody>
                   {filteredCalls.slice(0, visibleCount).map((c) => {
-                    const st = STATUS_BADGES[c.status ?? ""] ?? STATUS_BADGES.no_answer;
+                    const lead = leadLinks?.get(c.id);
                     return (
                       <tr key={c.id} className="border-b border-line/70 last:border-0 hover:bg-panel/60">
                         <td className={`${tdClass} font-mono text-[13px]`}>{formatDateTime(c.call_start)}</td>
                         <td className={`${tdClass} font-mono text-[13px]`}>{c.caller || "—"}</td>
                         <td className={`${tdClass} font-mono text-[13px]`}>{c.destination || "—"}</td>
+                        <td className={`${tdClass} max-w-[220px] truncate`}>
+                          {lead ? (
+                            <Link
+                              to={`/app/ubicaciones?lead=${lead.leadId}&tab=llamadas`}
+                              className="text-signal-blue hover:underline"
+                              title="Abrir ficha del lead"
+                            >
+                              {lead.leadName}
+                            </Link>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
+                        </td>
                         <td className={`${tdClass} text-muted-foreground`}>
                           {DIRECTION_LABELS[c.direction ?? ""] ?? DIRECTION_LABELS.outgoing}
                         </td>
                         <td className={tdClass}>
-                          <span
-                            className={`inline-flex font-mono text-[10.5px] tracking-[0.08em] uppercase rounded-full px-2.5 py-1 ${st.className}`}
-                          >
-                            {st.label}
-                          </span>
+                          <CallStatusBadge status={c.status} />
                         </td>
                         <td className={`${tdClass} text-right font-mono text-[13px]`}>{formatDuration(c.duration)}</td>
                         <td className={`${tdClass} text-right font-mono text-[13px]`}>{formatCost(c.cost, c.cost_currency ?? data.kpis.costCurrency)}</td>
@@ -495,7 +425,7 @@ export default function Llamadas() {
                   })}
                   {filteredCalls.length === 0 && (
                     <tr>
-                      <td colSpan={8} className="px-5 py-10 text-center text-muted-foreground">
+                      <td colSpan={9} className="px-5 py-10 text-center text-muted-foreground">
                         Ninguna llamada coincide con los filtros.
                       </td>
                     </tr>
