@@ -12,6 +12,8 @@ import { DiscoveryProgress } from "./DiscoveryProgress";
 import { useUpdateLead, useDeleteLead } from "@/hooks/crm/useLeads";
 import { useLeadActivities, useCreateActivity } from "@/hooks/crm/useLeadActivities";
 import { useTeamMembers } from "@/hooks/crm/useTeamMembers";
+import { useLeadCalls } from "@/hooks/calls/useLeadCalls";
+import { LeadCallsPanel } from "./LeadCallsPanel";
 import {
   Phone,
   Mail,
@@ -37,7 +39,11 @@ interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   onEdit: (lead: Lead) => void;
+  /** Pestaña con la que se abre la ficha (p. ej. "llamadas" al venir desde Llamadas). */
+  initialTab?: DrawerTab;
 }
+
+type DrawerTab = "actividades" | "llamadas" | "discovery" | "notas";
 
 const activityIcon: Record<string, React.ComponentType<{ className?: string }>> = {
   llamada: PhoneCall,
@@ -68,13 +74,19 @@ function relativeDate(d: string) {
   return new Intl.DateTimeFormat("es-ES", { day: "2-digit", month: "short" }).format(date);
 }
 
-export function LeadDrawer({ lead, open, onOpenChange, onEdit }: Props) {
+export function LeadDrawer({ lead, open, onOpenChange, onEdit, initialTab = "actividades" }: Props) {
   const update = useUpdateLead();
   const del = useDeleteLead();
   const { data: activities = [] } = useLeadActivities(lead?.id ?? null);
   const createActivity = useCreateActivity();
   const { data: teamMembers = [] } = useTeamMembers();
+  const { data: leadCalls = [] } = useLeadCalls(lead?.id ?? null);
   const { toast } = useToast();
+  const [tab, setTab] = useState<DrawerTab>(initialTab);
+
+  useEffect(() => {
+    if (open) setTab(initialTab);
+  }, [open, lead?.id, initialTab]);
 
   const [notesDraft, setNotesDraft] = useState("");
   const [actType, setActType] = useState("nota");
@@ -324,10 +336,13 @@ export function LeadDrawer({ lead, open, onOpenChange, onEdit }: Props) {
 
         {/* Tabs */}
         <div className="px-6 py-5">
-          <Tabs defaultValue="actividades">
+          <Tabs value={tab} onValueChange={(v) => setTab(v as DrawerTab)}>
             <TabsList className="bg-panel">
               <TabsTrigger value="actividades" className="font-mono text-[11px] tracking-[0.06em] uppercase">
                 Actividades
+              </TabsTrigger>
+              <TabsTrigger value="llamadas" className="font-mono text-[11px] tracking-[0.06em] uppercase">
+                Llamadas{leadCalls.length > 0 ? ` (${leadCalls.length})` : ""}
               </TabsTrigger>
               <TabsTrigger value="discovery" className="font-mono text-[11px] tracking-[0.06em] uppercase">
                 Discovery
@@ -336,6 +351,10 @@ export function LeadDrawer({ lead, open, onOpenChange, onEdit }: Props) {
                 Notas
               </TabsTrigger>
             </TabsList>
+
+            <TabsContent value="llamadas" className="mt-4">
+              {lead && <LeadCallsPanel leadId={lead.id} phone={lead.phone} />}
+            </TabsContent>
 
             <TabsContent value="discovery" className="mt-4 space-y-4">
               <p className="text-[12px] text-muted-foreground">

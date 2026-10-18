@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Search, Plus, LayoutGrid, Table2, Database, Loader2, Upload, User, AlertCircle, CalendarClock } from "lucide-react";
 import { useLeads, useBulkSeedLeads } from "@/hooks/crm/useLeads";
 import { useTeamMembers } from "@/hooks/crm/useTeamMembers";
@@ -62,11 +63,26 @@ export default function Ubicaciones() {
   const [formOpen, setFormOpen] = useState(false);
   const [formLead, setFormLead] = useState<Lead | null>(null);
   const [importOpen, setImportOpen] = useState(false);
+  const [drawerTab, setDrawerTab] = useState<"actividades" | "llamadas">("actividades");
+  const [params, setParams] = useSearchParams();
 
 
   useEffect(() => {
     document.title = "CRM · VendAI";
   }, []);
+
+  // Enlace directo a una ficha (?lead=<id>&tab=llamadas), p. ej. desde la página Llamadas.
+  useEffect(() => {
+    const leadId = params.get("lead");
+    if (!leadId || leads.length === 0) return;
+    const target = leads.find((l) => l.id === leadId);
+    if (target) {
+      setDrawerTab(params.get("tab") === "llamadas" ? "llamadas" : "actividades");
+      setOpenLead(target);
+      setDrawerOpen(true);
+    }
+    setParams({}, { replace: true });
+  }, [params, leads, setParams]);
 
   // Mantener `openLead` sincronizado con los datos frescos del query
   useEffect(() => {
@@ -332,7 +348,11 @@ export default function Ubicaciones() {
       <LeadDrawer
         lead={openLead}
         open={drawerOpen}
-        onOpenChange={setDrawerOpen}
+        onOpenChange={(v) => {
+          setDrawerOpen(v);
+          if (!v) setDrawerTab("actividades");
+        }}
+        initialTab={drawerTab}
         onEdit={(l) => {
           setFormLead(l);
           setFormOpen(true);
