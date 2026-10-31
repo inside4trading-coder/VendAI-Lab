@@ -112,7 +112,7 @@ export function LeadsKanban({ leads, onOpen, teamMembers, activityCounts }: Prop
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
-                      className={`p-3 space-y-3 min-h-[80px] transition-colors ${snapshot.isDraggingOver ? "bg-line/40" : ""}`}
+                      className={`p-2.5 space-y-2 min-h-[80px] transition-colors ${snapshot.isDraggingOver ? "bg-line/40" : ""}`}
                     >
                       {items.map((lead, i) => (
                         <Draggable key={lead.id} draggableId={lead.id} index={i}>
