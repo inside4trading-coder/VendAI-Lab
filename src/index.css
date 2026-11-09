@@ -73,14 +73,28 @@
   }
 
   .dark {
-    --background: var(--ink);
+    /* Tokens de marca invertidos: las clases bg-paper/text-ink/border-line/bg-panel
+       de la app deben seguir al tema, no quedarse en claro. */
+    --ink: 220 13% 92%;
+    --ink-2: 220 11% 78%;
+    --muted-ink: 218 8% 60%;
+    --faint: 218 8% 45%;
+    --line: 218 18% 18%;
+    --line-2: 218 18% 15%;
+    --panel: 218 18% 12%;
+    --paper: 218 22% 10%;
+
+    --background: 218 26% 8%;
     --foreground: 220 13% 92%;
     --card: 218 18% 12%;
     --card-foreground: 220 13% 92%;
     --popover: 218 18% 12%;
     --popover-foreground: 220 13% 92%;
-    --primary: var(--paper);
-    --primary-foreground: var(--ink);
+    --primary: 220 13% 92%;
+    --primary-foreground: 218 26% 8%;
+
+    /* El sidebar ya es oscuro: se fija para que no siga a --ink invertido. */
+    --sidebar-background: 218 26% 6%;
     --secondary: 218 18% 14%;
     --secondary-foreground: 220 13% 92%;
     --muted: 218 18% 14%;
