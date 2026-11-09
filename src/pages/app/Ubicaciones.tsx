@@ -57,7 +57,7 @@ export default function Ubicaciones() {
     return counts;
   }, [leads]);
 
-  const [view, setView] = useState<"tabla" | "kanban">("tabla");
+  const [view, setView] = useState<"tabla" | "kanban">("kanban");
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<"Todos" | string>("Todos");
   const [st, setSt] = useState<"Todos" | string>("Todos");
