@@ -1,10 +1,15 @@
 import { useEffect } from "react";
 import { usePreferences } from "@/hooks/settings/useSettings";
 
-// "system" no sigue al SO (siempre claro) hasta validar visualmente el modo oscuro
-// en todas las pantallas; solo "dark" explícito activa .dark.
 function applyTheme(theme: "light" | "dark" | "system") {
-  document.documentElement.classList.toggle("dark", theme === "dark");
+  const root = document.documentElement;
+  const resolved =
+    theme === "system"
+      ? window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light"
+      : theme;
+  root.classList.toggle("dark", resolved === "dark");
 }
 
 export function ThemeSync() {
@@ -12,6 +17,11 @@ export function ThemeSync() {
   useEffect(() => {
     if (!prefs) return;
     applyTheme(prefs.theme);
+    if (prefs.theme !== "system") return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const listener = () => applyTheme("system");
+    mq.addEventListener("change", listener);
+    return () => mq.removeEventListener("change", listener);
   }, [prefs?.theme]);
   return null;
 }
