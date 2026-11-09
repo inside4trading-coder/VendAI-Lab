@@ -6,8 +6,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { LEAD_CATEGORIES, LEAD_STATUSES, type Lead, teamMemberLabel } from "@/lib/crm";
-import { useCreateLead, useUpdateLead, type NewLead } from "@/hooks/crm/useLeads";
+import { categoryOptions, LEAD_STATUSES, type Lead, teamMemberLabel } from "@/lib/crm";
+import { useCreateLead, useLeads, useUpdateLead, type NewLead } from "@/hooks/crm/useLeads";
 import { useTeamMembers } from "@/hooks/crm/useTeamMembers";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
@@ -43,6 +43,7 @@ export function LeadForm({ open, onOpenChange, lead }: Props) {
   const create = useCreateLead();
   const update = useUpdateLead();
   const { data: teamMembers = [] } = useTeamMembers();
+  const { data: leads = [] } = useLeads();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -116,7 +117,7 @@ export function LeadForm({ open, onOpenChange, lead }: Props) {
                 onChange={(e) => set("category", e.target.value)}
                 className="form-input"
               >
-                {LEAD_CATEGORIES.map((c) => (
+                {categoryOptions(leads, form.category).map((c) => (
                   <option key={c}>{c}</option>
                 ))}
               </select>
