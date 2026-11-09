@@ -5,7 +5,7 @@ import { useLeads, useBulkSeedLeads } from "@/hooks/crm/useLeads";
 import { useTeamMembers } from "@/hooks/crm/useTeamMembers";
 import { useLeadActivityCounts } from "@/hooks/crm/useLeadActivities";
 import { useAuth } from "@/hooks/useAuth";
-import { LEAD_CATEGORIES, LEAD_STATUSES, DISCOVERY_QUESTIONS, teamMemberLabel, type Lead } from "@/lib/crm";
+import { categoryOptions, LEAD_STATUSES, DISCOVERY_QUESTIONS, teamMemberLabel, type Lead } from "@/lib/crm";
 import { discoveryCount } from "@/components/app/crm/DiscoveryProgress";
 import { LeadsTable } from "@/components/app/crm/LeadsTable";
 import { LeadsKanban } from "@/components/app/crm/LeadsKanban";
@@ -49,6 +49,13 @@ export default function Ubicaciones() {
   const { data: activityCounts = {} } = useLeadActivityCounts();
   const { user } = useAuth();
   const { toast } = useToast();
+
+  const categories = useMemo(() => categoryOptions(leads), [leads]);
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const l of leads) counts[l.category] = (counts[l.category] ?? 0) + 1;
+    return counts;
+  }, [leads]);
 
   const [view, setView] = useState<"tabla" | "kanban">("tabla");
   const [q, setQ] = useState("");
@@ -225,9 +232,9 @@ export default function Ubicaciones() {
             className="form-input md:w-44"
           >
             <option value="Todos">Todas las categorías</option>
-            {LEAD_CATEGORIES.map((c) => (
+            {categories.map((c) => (
               <option key={c} value={c}>
-                {c}
+                {c} ({categoryCounts[c] ?? 0})
               </option>
             ))}
           </select>

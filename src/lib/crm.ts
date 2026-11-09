@@ -8,8 +8,25 @@ export const LEAD_STATUSES = [
 ] as const;
 export type LeadStatus = (typeof LEAD_STATUSES)[number];
 
-export const LEAD_CATEGORIES = ["Gimnasios", "Hoteles", "Oficinas", "Otros"] as const;
+export const LEAD_CATEGORIES = [
+  "Gimnasios",
+  "Hoteles",
+  "Oficinas",
+  "Parking",
+  "Lavandería",
+  "Tintorería",
+  "Otros",
+] as const;
 export type LeadCategory = (typeof LEAD_CATEGORIES)[number];
+
+/** Categorías base + las que existan en los leads (p. ej. importadas), sin duplicados. */
+export function categoryOptions(leads: { category: string }[], extra?: string): string[] {
+  const seen = new Set<string>(LEAD_CATEGORIES);
+  const dynamic = new Set<string>();
+  for (const l of leads) if (l.category && !seen.has(l.category)) dynamic.add(l.category);
+  if (extra && !seen.has(extra)) dynamic.add(extra);
+  return [...LEAD_CATEGORIES, ...[...dynamic].sort((a, b) => a.localeCompare(b, "es"))];
+}
 
 export const ACTIVITY_TYPES = [
   "llamada",
